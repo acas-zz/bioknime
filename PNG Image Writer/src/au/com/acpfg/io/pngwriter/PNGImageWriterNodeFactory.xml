@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Sink">
+    <name>PNG Image Writer</name>
+    
+    <shortDescription>
+        Writes PNG images in KNIME table to disk as separate files, based on user configuration. 
+        Ideal for saving graphical results from other nodes to files which can then be edited.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>  Writes PNG images in KNIME table to disk as separate files, based on user configuration. 
+        Ideal for saving graphical results from other nodes to files which can then be edited.
+        This node is unrelated to the Image Processing extension(s), it is for working with the
+        image cells built into KNIME.</intro>
+        
+        
+        <option name="Folder">Folder to save the image the images to</option>
+        <option name="Filename column">Choose the column (or rowID) which contains the names
+        for each image file created by the node. A PNG file extension (.png) will be appended if
+        needed.</option>
+        <option name="Column with PNG images">Column which contains the images to save. For example,
+        the WU-BLAST and InterProScan EBI web service nodes both produce graphical results which can be
+        saved using this node</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Image table">Table which includes a column of filenames (or row ID) and images</inPort>
+        <!-- possibly more input ports here-->
+    </ports>    
+  
+</knimeNode>
