@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>Fasta Reader</name>
+    
+    <shortDescription>
+        This nodes reads sequences from the user-specified FASTA file and outputs its data into three columns.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This nodes reads sequences from the user-specified FASTA file and outputs this data into 4 columns: 
+        <ol>
+         <li/>Accession
+         <li/>Description - often not accurate in practice
+         <li/>Sequence data
+         <li/>Filename
+        </ol>
+        More information about the FASTA file format can be found <a href="http://en.wikipedia.org/wiki/FASTA_format">here</a>
+        
+        <p>
+        Note that whitespace is removed from all sequence data. Only sequence data which conforms to <tt>^[-A-Za-z\*]+$</tt> will 
+        be passed thru, as it is not valid sequence data. This reader supports two modes of operation: a single file
+        or a folder with many fasta files contained in it (subdirectories are not searched). Compression is not currently supported.
+        </p>
+        
+        <p>
+        This is not a <i>strict</i> parser according to the letter-of-the-law. Bitter experience points to many deficient and
+        non-conformant fasta files which have to be used within KNIME. 
+        Verification of results (eg. number of sequences loaded, average sequence length etc.) is recommended.
+        </p>
+        </intro>
+        
+        <option name="Selected File">FASTA format file to read from</option>
+        <option name="Accession Regular Expression">How much data on the <tt>&gt;</tt>-line to interpret as an identifier. This regular
+        expression must have exactly one pair of capturing parenthesis <tt>()</tt>. Default RE matches up the first whitespace as the identifier.</option>
+        <option name="Description Regular Expression">How much data on the <tt>&gt;</tt>-line to interpret as the description. Default RE matches
+        everything after the default accession regular expression, but the two can overlap if this is desired.</option>
+        <option name="Entry Handler">How to handle multiple (accession, description) entries on a <tt>&gt;</tt>-line (each will be separated by ctrl-A).
+        This node currently supports two ways to handle this:
+        <ul>
+        	<li>Create collection columns for Accession and Description (the collection is ordered in the same way as the file). This option requires
+        	more memory</li>
+        	<li>Load only the first entry in the line, the remainder are ignored. The Accession and Description columns are String columns.</li>
+        </ul>
+        </option>
+    </fullDescription>
+    
+    <ports>
+        
+        <outPort index="0" name="FASTA sequences">Each row contains a single sequence with accession and description data filled in as described above.</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+    
+</knimeNode>

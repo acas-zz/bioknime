@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: XQuery Processor for XMLCell columns
+Bundle-SymbolicName: au.com.acpfg.xml.query;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: xmlreader.jar,
+ lib/XQEngine.jar
+Bundle-Activator: au.com.acpfg.xml.query.XQueryProcessorNodePlugin
+Bundle-Vendor: Andrew Cassin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Eclipse-LazyStart: true
+Export-Package: au.com.acpfg.xml.query,
+ com.fatdog.xmlEngine,
+ com.fatdog.xmlEngine.exceptions,
+ com.fatdog.xmlEngine.javacc,
+ com.fatdog.xmlEngine.words,
+ com.fatdog.xmlEngine.words.dictionaries
+Import-Package: au.com.acpfg.xml.reader,
+ org.apache.commons.codec.binary;version="1.3.0"
+

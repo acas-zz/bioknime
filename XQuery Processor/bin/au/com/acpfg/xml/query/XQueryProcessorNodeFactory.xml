@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>XQuery Processor</name>
+    
+    <shortDescription>
+        Provides an XQuery knime api &amp; XML "blob" cell type and data processing. Useful for many life science XML formats (PepXML, ProtXML, etc. etc.)
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node applies multiple XQuery statements to the chosen XML column, returning the 
+        results for these queries to the user. This can be used to get data from XML documents conforming to many standards
+        currently in widespread use. XQEngine is used as a backend to perform the queries. It is also
+        possible to save and open files with queries in them, to facilitate sharing of queries.
+        
+        <p>The amount of memory consuming by this node depends on the amount of XML in each cell. As a 
+        general rule you need approximately 100MB memory for each 25MB of XML, but this varies depending
+        on the XML. Compressed files are not currently supported. This implementation uses
+        <a href="http://xqengine.sourceforge.net">XQEngine</a> to execute the queries, so it has
+        the same limitations.</p>
+        </intro>
+        
+        
+        <option name="Data Source">If the input table contains multiple XML columns, this tab lets
+        the user choose what input column is processed. Missing values will be ignored.</option>
+        <option name="Selected Directory">If <em>load all files in folder</em> is checked, this option
+        lets you specify a folder full of XML files. Each query will be applied in turn to each file,
+        before proceeding to the next file. It is up to the user to ensure the folder only contains
+        well formed XML documents, or an error will generally result</option>
+        
+        <option name="XQueries">
+        Displays a list of XQuery-compatible entries, each of which will be run over each XML input file.
+        Results depend on the query and on the chosen output format, which appears on the bottom left. You may
+        also change the name for each query which determines the output column name. Queries may be disabled
+        which maximises performance when a query is not needed. A set of queries can be loaded/saved to a file
+        or even added to the existing queries as needed.
+        
+        <p>For details about XQuery consult ...</p>
+        </option>
+        
+        <option name="Edit Query">
+        The currently selected XQuery is displayed in this panel: it permits the user to change the query,
+        its results (in terms of KNIME columns) and the name of the output columns. Changes made here are
+        automatically reflected in the list of XQueries.
+        </option>
+    </fullDescription>
+    
+    <ports>
+    	<inPort index="0" name="XML Input data">Input data with at least one XML column to process></inPort>
+    	
+        <outPort index="0" name="XML Query Hits">Matching XML/text data from input file(s)</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+   
+</knimeNode>

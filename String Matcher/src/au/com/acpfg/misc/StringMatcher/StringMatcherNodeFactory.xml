@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>String Matcher</name>
+    
+    <shortDescription>
+        Used to match a set of strings against a column in the input table. All input columns are preserved, but the matches are appended to the table.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This nodes takes two inputs:
+        <ul>
+        	<li>A column to be searched</li>
+        	<li>A column of search strings: which describe what data in the first input to match. These strings can be interpreted either as literal strings (case sensitive, exact matching)
+        	or regular expressions (see below)</li>
+        </ul>
+        and applies each search string against each cell in the chosen column. A wide range of match options can be controlled by the user.
+      
+        <p><strong>Output columns:</strong></p>
+        <p>
+            The user can configure the node to output some these columns (the more columns are chosen, the slower the search):
+        	<ol>
+        		<li/><em>Matches (list)</em>: a list of all strings matched by all patterns (KNIME collection cell)
+        		<li/><em>Match Positions (list)</em>: a list of strings of the form: <tt>start-end</tt> for every match (positions start at 0)
+        		<li/><em>Unique Match Count</em>: the number of distinct (case sensitive) match strings found
+        		<li/><em>Unique Matches</em>: a set of distinct (case sensitive) matched strings
+        		<li/><em>Match Count</em>: the number of strings matched in the search string (a single pattern can match multiple times)
+        		<li/><em>Start Positions (list)</em>: a list of integers with values where matches start (positions start at 0)
+        		<li/><em>Extent of matches (list)</em>: the length of each match as a list of integers
+        		<li/><em>Match Extent (substring)</em>: the region of the matched input string from the beginning of the first match to the end of the last match
+        		<li/><em>Match Extent (position)</em>: the region of the matched input string as positions: <tt>start-end</tt>
+        		<li/><em>Matching Search Strings (unique)</em>: the set of patterns which matched as a collection cell
+        		<li/><em>Non-overlapping matches (list)</em>: matches which do not overlap as a list
+        		<li/><em>Non-overlapping match count</em>: a count of non-overlapping matches. No guarantees about what overlapping matches are selected should be assumed.
+        		<li/><em>Match Start Position Density (Bit Vector)</em>: an easy way to visualize where in the string the matches start (choose the "bit scratch" renderer for the column)
+        		<li/><em>Match Position Density (Bit Vector)</em>: visualises the extent of each match, rather than just the start
+        		<li/><em>Number of matches per position (list)</em>: a list of integers which reflect the number of matches at each position of the input string
+        		<li/><em>Input String Coverage (%)</em>: the total percentage of the input string which was matched by the complete set of patterns
+        		<li/><em>Unique Match Distribution</em>: Shows the occurrence values for each unique match as a collection cell
+        		<li/><em>Pattern distribution (successful only)</em>: a count, for each matching pattern, of how many times it matches the input string as a set
+        		<li/><em>Patterns (successful, distinct)</em>:a set of patterns which matched the input string
+        	</ol>
+        	Lists are guaranteed to be in the left-to-right match order of the input string, sets are not.
+        </p>
+        </intro>
+        
+        <option name="treat as regular expression">Treat the search strings as regular expressions: the full range of Java regular expressions is supported and
+        partial matches of the string are supported (unlike other KNIME nodes).</option>
+        <option name="keep only matched rows">Only rows which match at least one string are reported in the output</option>
+        <option name="column to search">Specify the column in the first input port which contains the data to be searched</option>
+        <option name="column with match strings">The chosen column will contain either the regular expressions or literal strings to be matched. Each string is tried
+        against every row in the search column (brute force).</option>
+        
+        
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Data to match against</inPort>
+        <inPort index="1" name="Search strings">Search strings (in user-specified column)</inPort>
+        
+        <outPort index="0" name="Match Results">Results of the match, all input columns in the input data are preserved</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+ 
+</knimeNode>

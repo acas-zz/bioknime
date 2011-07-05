@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            description="Nodes written by http://www.acpfg.com.au"
+            icon="icons/default.png"
+            level-id="ACPFG"
+            name="ACPFG"
+            path="/"/>
+   </extension>
+   
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/ACPFG"
+            factory-class="au.com.acpfg.misc.StringMatcher.StringMatcherNodeFactory"
+            id="au.com.acpfg.misc.StringMatcherNodeFactory"/>
+   </extension>
+   
+</plugin>

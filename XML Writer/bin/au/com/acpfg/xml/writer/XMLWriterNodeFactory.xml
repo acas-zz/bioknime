@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Sink">
+    <name>XML Writer</name>
+    
+    <shortDescription>
+        Saves XMLcell's to disk as separate XML documents. 
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+        This node writes XML columns to disk as separate files per cell. The filename is chosen based
+        on the configuration settings. 
+        </intro>
+        
+        
+        <option name="XML Column">The XML column with cells to be saved to files</option>
+        <option name="Filename conventions">Lets you control the names of files which the node produces. Each cell
+        will be saved to a separate file. All will be saved to
+        the saved folder location</option>
+        <option name="Save to folder...">Specifies the location of the folder</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Input data (including XML column)</inPort>
+        <!-- possibly more input ports here-->
+    </ports>    
+   
+</knimeNode>

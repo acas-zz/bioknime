@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./xml-icon-16x16.png" type="Source">
+    <name>XMLReader</name>
+    
+    <shortDescription>
+        Loads XML documents (either in a folder or files) into XML cells for further processing by 
+        (for example) the XQuery Processor node
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Loads XML documents (either in a folder or files) into XML cells for further processing by 
+        (for example) the XQuery Processor node</intro>
+        
+        
+        <option name="short name of first option (like in the dialog)">description of first option</option>
+        <option name="short name of second option (like in the dialog)">description of second option</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Out-Port name">Description of first output port...</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+    
+</knimeNode>

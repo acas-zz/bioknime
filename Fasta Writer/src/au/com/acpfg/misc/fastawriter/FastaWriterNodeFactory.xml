@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Sink">
+    <name>Fasta Writer</name>
+    
+    <shortDescription>
+        Writes a .FASTA sequence file from three columns
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node saves sequence data in fasta format. Each row becomes a single FASTA entry,
+        comprising data from the 3 chosen columns: Accession, Description, Sequence. More information
+        about the FASTA format can be found <a href="http://en.wikipedia.org/wiki/FASTA_format">at wikipedia</a></intro>
+        
+        
+        <option name="Filename">Where to save the data to</option>
+        <option name="Accession">Which column in the input to use as accessions</option>
+        <option name="Description">Which column in the input to use as description</option>
+        <option name="Sequence">Which column to use for the sequence data</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="In-Port name">Input data</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Out-Port name">Same as input data</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+ 
+</knimeNode>

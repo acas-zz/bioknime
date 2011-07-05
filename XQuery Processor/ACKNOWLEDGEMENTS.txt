@@ -1,0 +1,13 @@
+This node uses code from XQEngine, http://xqengine.sourceforget.net
+authored by:
+
+Howard Katz, Fatdog Software Inc.
+   3771 Sunshine Coast Hwy
+   Roberts Creek, BC
+   Canada V0N 2W2
+
+   Email: howardk@fatdog.com
+   Website: www.fatdog.com
+
+
+

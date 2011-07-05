@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: XMLWriter-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.xml.writer; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: xmlwriter.jar
+Bundle-Activator: au.com.acpfg.xml.writer.XMLWriterNodePlugin
+Bundle-Vendor: Andrew Cassin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Bundle-ActivationPolicy: lazy
+Export-Package: au.com.acpfg.xml.writer
+Import-Package: au.com.acpfg.xml.reader
+
