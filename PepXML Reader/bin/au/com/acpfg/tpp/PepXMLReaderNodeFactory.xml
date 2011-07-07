@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>PepXML Reader</name>
+    
+    <shortDescription>
+        Reads PepXML (as produced by the trans-proteomics pipeline) to enable processing of peptide/protein identifications and statistics using KNIME
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node provides most of the key data from <a href="http://tools.proteomecenter.org/wiki/index.php?title=Formats:pepXML">PepXML</a> documents, as produced by the
+        <a href="http://tools.proteomecenter.org/wiki/index.php?title=Software:TPP">Trans-Proteomic Pipeline</a>. This gives KNIME the ability to process spectral assignments to peptides
+        and/or proteins and therefore to analyse the available data. This node is often used
+        in conjunction with Mascot .DAT Reader and other TPP nodes to perform a broad analysis of results
+        in a Proteomics experiment.
+        </intro>
+        
+        
+        <option name="Filename">The filename which must end in <tt>.pep.xml</tt> to be processed. This
+        file must have been produced by PeptideProphet 4.3.x (or compatible) or results have been
+        untested</option>
+        
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="PepXML data">PepXML data in row-format ready for analysis</outPort>
+        <!-- possibly more input ports here-->
+    </ports>    
+   
+</knimeNode>
