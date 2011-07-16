@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MuscleAccessor-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.misc.muscle; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: muscleaccessor.jar,
+ lib/pal-1.5.1.jar,
+ lib/Muscle_Axis1.jar
+Bundle-Activator: au.com.acpfg.misc.muscle.MuscleAccessorNodePlugin
+Bundle-Vendor: Andrew Cassin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Eclipse-LazyStart: true
+Export-Package: au.com.acpfg.misc.muscle
+Import-Package: javax.xml.rpc,
+ javax.xml.rpc.encoding,
+ org.apache.axis,
+ org.apache.axis.client,
+ org.apache.axis.constants,
+ org.apache.axis.description,
+ org.apache.axis.encoding,
+ org.apache.axis.encoding.ser,
+ org.apache.axis.soap,
+ org.apache.commons.cli
+

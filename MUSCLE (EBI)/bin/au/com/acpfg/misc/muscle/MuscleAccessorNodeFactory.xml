@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>Muscle Accessor</name>
+    
+    <shortDescription>
+        Provides multiple alignment of sequences via MUSCLE as implemented by EBI
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Provides multiple alignment of sequences via <a href="http://www.ebi.ac.uk/Tools/MUSCLE/">MUSCLE</a> as implemented by EBI. This node
+        is deliberately polite to EBI servers to avoid being banned from EBI's excellent servers - please be patient!
+        
+        <p>This node works by processing two collection columns: each column, for a given row, must have the same number of elements in it eg. 5 accessions means 5 sequences.
+        Each row comprises a separate MUSCLE job for EBI and it will align only the sequences in the current row being processed.</p>
+        
+        <p>This node produces two outputs: one is Base64 encoded, so that it can be passed safely into the R KNIME nodes for processing by phanghorn/ape packages (or others as described
+        by <a href="http://www.cran.r-project.org/web/views/Phylogenetics.html">R Phylogenetics packages</a>).
+        The other, is designed with the view for this node. Note that memory requirements increase with the
+        number of alignments, so more than 100 rows to align is not recommended (as a rule of thumb).
+        </p>
+        
+        <p><b>NOTE</b>: this node does not permit more than one thousand sequences in a single MUSCLE job, the real practical limit is likely to be much lower. In practical
+        terms, more than 50 sequences for a single tree is likely to be unreadable.</p>
+        </intro>
+        
+        
+        <option name="Email Address">Should EBI have a problem with your jobs, they may contact you using this email address. <b>WARNING:</b> not providing a valid
+        email address may get you banned from EBI (your IP or perhaps your entire organisation's network)</option>
+        
+        <option name="Sequence Collection">A collection column (see the Create Collection Column node) which contains the set of sequences to align for each
+        MUSCLE job. Each row is a separate MUSCLE job.</option>
+        
+        <option name="Accession Collection">A collection column which contains the set of accessions (in the same order as the sequences above) to use for naming
+        the aligned sequences. Every sequence must have a corresponding accession. The accession must satisfy limitations imposed by MUSCLE or the jobs may not work.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Data to be MUSCLE'd">Sequences and Accessions to multi-align</inPort>
+       
+        <outPort index="0" name="Aligned Sequence Data">Alignment output data (base64 encoded phylip format+viewable format)</outPort>
+    </ports>    
+    
+    <views>
+    	<view index="0" name="Alignment view">Shows each cluster of sequences in an interactive way</view>
+    </views>
+</knimeNode>

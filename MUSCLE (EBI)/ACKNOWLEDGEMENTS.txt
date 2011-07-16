@@ -1,0 +1,21 @@
+
+This node uses two external software packages:
+
+1) Axis MUSCLE client from www.ebi.ac.uk which is subject to terms of use
+   as described at 
+	http://www.ebi.ac.uk/Tools/webservices/services/msa/muscle_soap
+
+2) PAL Phylogenetic codebase, see 
+	http://www.cebl.auckland.ac.nz/pal-project/features.html 
+
+
+   PAL is distributed under the LGPL license as described at
+        http://www.cebl.auckland.ac.nz/pal-project/license.html 
+
+
+
+We appreciate and acknowledge the respective efforts that have made 
+this node possible.
+
+
+
