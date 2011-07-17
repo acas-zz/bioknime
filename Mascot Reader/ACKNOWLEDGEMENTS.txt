@@ -1,6 +1,6 @@
 
-This node uses the excellent mascotdatfile library to do most of the work.
-The website for mascotdatfile can be found at:
+This node uses the excellent mascotdatfile library (and dependancies)
+to do most of the work.  The website for mascotdatfile can be found at:
 
 http://code.google.com/p/mascotdatfile/
 
@@ -9,9 +9,9 @@ Helsens et al. MascotDatfile: an open-source library to fully
 parse and analyse MASCOT MS/MS search results. Proteomics (2007) vol. 7 (3) 
 pp. 364-6 (pid:17203510) 
 
-And it is redistributed here under the Apache 2.0 license:
+And it is redistributed unmodified here under the Apache 2.0 license:
 
-   [Copyright 2011] Lennart Martens et al
+   [Copyright 2011] 
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
