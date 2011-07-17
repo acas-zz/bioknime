@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>Mascot Reader</name>
+    
+    <shortDescription>
+        Using the MascotDatFile open-source java library, this node provides an interface to that, to provide convenient access to MatrixScience Mascot datasets
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node reads a folder containing <a href="http://www.matrixscience.com">Mascot</a> data files and loads them into
+        KNIME for further analysis. This node uses the excellent <a href="http://www.ncbi.nlm.nih.gov/pubmed/17203510">Mascotdatfile library</a> to perform the extraction of data.
+        </intro>
+        
+        
+        <option name="Folder">The folder containing the .DAT files, other files (or folders) in this folder will be ignored.</option>
+        <option name="Result Selection">There are three choices: 
+          <ul>
+            <li><b>All</b>: Every peptide which is assigned to a given spectra (query) is reported</li>
+            <li><b>Best only</b>: Only peptides which are considered to be the best match, by Mascot, to the spectra is reported</li>
+            <li><b>Identity Threshold Confidence</b> All hits over the chosen Identity threshold are reported, regardless of which spectra they
+            were assigned to</li>
+          </ul>
+        </option>
+        
+        <option name="Identity Threshold Confidence">Only peptide hits considered within this value will be reported. 0.05 in this field
+        corresponds to a 95% CI, which is what you should use unless your sure of what this means. Remember this is a peptide-level
+        confidence measure and not protein-level (which is generally much lower due to multiple possible matches for a peptide to a protein)</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Mascot Results">Contains the peptide and protein assignments identified by Mascot for the specified .DAT files</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+   
+</knimeNode>
