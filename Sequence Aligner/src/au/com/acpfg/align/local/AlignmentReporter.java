@@ -211,7 +211,8 @@ public class AlignmentReporter {
 	}
 
 	/**
-	 * Returns the alignment in the requested format
+	 * Returns the alignment in the requested format. TODO: incomplete
+	 * 
 	 * @param required_format one of "blast", "clustalw" and "fasta" for now
 	 * @return string representation of this alignment in desired format
 	 */
