@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SequenceAligner-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.align.local;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: sequencealigner.jar,
+ lib/jaligner.jar,
+ lib/neobio.jar
+Bundle-Activator: au.com.acpfg.align.local.SequenceAlignerNodePlugin
+Bundle-Vendor: Andrew Cassin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Eclipse-LazyStart: true
+Export-Package: au.com.acpfg.align.local;
+  uses:="org.eclipse.core.runtime,
+   org.knime.core.node,
+   org.osgi.framework,
+   org.knime.core.node.defaultnodesettings"
+Import-Package: au.com.acpfg.misc.muscle,
+ pal.alignment,
+ pal.misc
+
