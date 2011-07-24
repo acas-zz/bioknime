@@ -1,9 +1,9 @@
 package au.com.acpfg.misc.muscle;
 
 import org.knime.core.data.DataValue;
-import org.knime.core.data.DataValue.UtilityFactory;
 
 import pal.misc.Identifier;
+import pal.datatype.DataType;
 
 /**
  * These methods correspond to the Alignment interface in PAL to enable the cell to use
@@ -28,7 +28,7 @@ public interface AlignmentValue extends DataValue {
 
 	public char getData(int arg0, int arg1);
 
-	public pal.datatype.DataType getDataType();
+	public DataType getDataType();
 
 	public int getSequenceCount();
 

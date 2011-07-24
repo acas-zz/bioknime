@@ -9,7 +9,6 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.axis.encoding.Base64;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -38,10 +37,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import pal.datatype.AminoAcids;
-
-import uk.ac.ebi.webservices.axis1.*;
+import uk.ac.ebi.webservices.axis1.MuscleClient;
 import uk.ac.ebi.webservices.axis1.stubs.muscle.InputParameters;
-import uk.ac.ebi.webservices.axis1.stubs.muscle.WsResultType;
 
 
 

@@ -8,10 +8,6 @@ import java.io.StringWriter;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
-import org.knime.core.data.DataValue;
-import org.knime.core.data.DataValue.UtilityFactory;
-
-import au.com.acpfg.misc.muscle.FormattedRenderer.FormatType;
 
 import pal.alignment.Alignment;
 import pal.alignment.AlignmentReaders;
