@@ -19,7 +19,7 @@ Export-Package: au.com.acpfg.align.local;
    org.knime.core.node,
    org.osgi.framework,
    org.knime.core.node.defaultnodesettings"
-Import-Package: au.com.acpfg.misc.muscle,
+Import-Package: au.com.acpfg.align.muscle,
  pal.alignment,
  pal.misc
 

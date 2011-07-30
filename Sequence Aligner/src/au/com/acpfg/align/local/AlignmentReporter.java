@@ -1,11 +1,15 @@
 package au.com.acpfg.align.local;
 
+import jaligner.Alignment;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import neobio.alignment.PairwiseAlignment;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -20,20 +24,10 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.data.vector.bitvector.DenseBitVector;
 import org.knime.core.data.vector.bitvector.DenseBitVectorCell;
 import org.knime.core.data.vector.bitvector.DenseBitVectorCellFactory;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 
-import au.com.acpfg.misc.muscle.MultiAlignmentCell;
-
 import pal.alignment.AlignmentUtils;
-import pal.alignment.SimpleAlignment;
-
-import neobio.alignment.PairwiseAlignment;
-import jaligner.Alignment;
-import jaligner.formats.CLUSTAL;
-import jaligner.formats.FASTA;
-import jaligner.formats.FormatFactory;
-import jaligner.formats.Pair;
+import au.com.acpfg.align.muscle.MultiAlignmentCell;
 
 public class AlignmentReporter {
 	private String m_a1, m_a2;			   // accessions for the pair of sequences
