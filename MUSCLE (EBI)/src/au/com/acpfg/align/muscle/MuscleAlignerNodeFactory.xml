@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>Muscle Aligner</name>
+    
+    <shortDescription>
+        Using EBI web services, this node performs a multi-alignment. WARNING: your property is exposed to an external provider, be sure your intellectual property is preserved!
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This nodes performs alignments of sequences using <a href="http://www.ebi.ac.uk">EBI</a> 
+        MUSCLE web service 
+        (up to 1000 sets of sequences is currently supported, although
+        it is recommended that these be less than 500 residues). The node expects two collections per row
+        with the following attributes:
+        <ol>
+        	<li>A list of sequences (eg. as created by the <b>GroupBy</b> node)</li>
+        	<li>A list of accessions in the same order as the sequences (and same length)</li>
+        </ol>
+        The user must also specify the type of sequence (nucleotide or protein) and an email
+        address by which EBI can contact you if there is a problem. 
+        <p>
+        This node is deliberately slow to ensure it meets the EBI terms of service and users must be
+        aware that their sequence data is exposed to the public Internet by use of this node.</p>
+        </intro>
+        
+        <option name="Email">EBI require an email address as a contact for the jobs in case something is wrong, so enter it here</option>
+        <option name="List of sequences"></option>
+        <option name="List of accessions">description of second option</option>
+        <option name="Sequence Type">Select the type sequences to be aligned eg. nucleotide (A, C, G, T/U) or protein</option>
+     
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Sequence data">Input alignment columns</inPort>
+
+        <outPort index="0" name="Alignments">MUSCLE alignments</outPort>
+    </ports>    
+    
+</knimeNode>

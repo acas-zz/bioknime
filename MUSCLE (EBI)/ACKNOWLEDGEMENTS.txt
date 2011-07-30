@@ -1,21 +1,18 @@
 
-This node uses two external software packages:
+This node uses the following two java packages to provide functionality for
+itself and for other nodes within this package:
 
-1) Axis MUSCLE client from www.ebi.ac.uk which is subject to terms of use
-   as described at 
-	http://www.ebi.ac.uk/Tools/webservices/services/msa/muscle_soap
+1) EBI MUSCLE AXIS SOAP client:
+   http://www.ebi.ac.uk/Tools/webservices/services/msa/muscle_soap
+   
 
-2) PAL Phylogenetic codebase, see 
-	http://www.cebl.auckland.ac.nz/pal-project/features.html 
-
-
-   PAL is distributed under the LGPL license as described at
-        http://www.cebl.auckland.ac.nz/pal-project/license.html 
-
+2) PAL Phylogenetic Library
+   http://www.cebl.auckland.ac.nz/pal-project/index.html
+   PAL is distributed under the LGPL license, see the LICENSE.pal in the root
+   of this repository for more details
 
 
-We appreciate and acknowledge the respective efforts that have made 
-this node possible.
+Without the effort and publication of this work and ongoing service support, this node would not be possible. 
 
-
-
+Andrew Cassin
+acassin@unimelb.edu.au
