@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MinProteinList-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.proteomics; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: minproteinlist.jar
+Bundle-Activator: au.com.acpfg.proteomics.MinProteinListNodePlugin
+Bundle-Vendor: Andrew Cassin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Bundle-ActivationPolicy: lazy
+Export-Package: au.com.acpfg.proteomics
+

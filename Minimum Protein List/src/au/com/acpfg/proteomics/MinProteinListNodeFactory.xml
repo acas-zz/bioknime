@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>Minimum Protein List</name>
+    
+    <shortDescription>
+        Uses Integer Linear Programming, via the GLPK toolkit, to implement a minimum set cover algorithm
+        which is then used to produce a minumum protein list. 
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Uses Integer Linear Programming, via the <a href="http://www.gnu.org/s/glpk/">GLPK toolkit</a>, 
+        to implement a <a href="http://en.wikipedia.org/wiki/Set_cover_problem">minimum set cover algorithm</a> which is then used to produce a minimum protein list. the node expects two columns:
+        <ul>
+        	<li>A column containing the protein ID (eg. uniprot accession). Only one row may contain a given accession</li>
+        	<li>A column containing the comma-separated peptides attributed to that accession (there must be at least one).
+        	This can be done using node group-by node with the concatenate option for the peptide sequence column</li>
+        </ul>
+        This node will answer the question: what is the smallest number of proteins which can explain the observed
+        peptides?
+        
+        <p>
+        <b>Note:</b> this node may not produce an optimal answer, at the moment this node does not tell you
+        whether the minimum set has been produced (but that should be fixed soon!). This node treats all proteins
+        as having the same weight, which for some experiments may not be desirable. This node can only be used
+        on systems with GLPK installed.
+        </p>
+        </intro>
+        
+        
+        <option name="Peptide Sequence">Select the column which provides a comma-separated 
+        list of peptides observed for a given protein (row)</option>
+        <option name="Accession">Select the column which provides the protein ID (must
+        be unique across the input table for correct results)</option>
+        <option name="GPLK Solver executable">Specify the glpsol.exe file path. GLPK v4.4 was used with this node, other versions
+        may work, but have not been tested</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Peptide-Protein table">An input table with each row identifying a single
+        protein and the peptides matched to it</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Peptide-Protein table">Same data with an additional column
+        for whether the protein is part of the approximate minimal set</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+</knimeNode>
