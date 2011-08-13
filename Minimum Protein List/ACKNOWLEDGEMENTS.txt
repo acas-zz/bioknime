@@ -1,0 +1,12 @@
+
+This KNIME node requires GLPK "GNU Linear Programming Kit" to compute the
+minimum set cover ILP formulation. GLPK v4.4 must be installed 
+on the computer where KNIME is installed for the node to operate.
+
+Further details can be found at http://www.gnu.org/s/glpk/
+
+The author gratefully acknowledges this product, whose excellent work
+makes the node straightforward.
+
+Andrew Cassin
+acassin@unimelb.edu.au
