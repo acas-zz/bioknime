@@ -1,0 +1,37 @@
+UNIPROT JAVA API
+------------------
+http://www.ebi.ac.uk/uniprot/remoteAPI
+
+1. INTRODUCTION
+
+You can access UniProt data from a Java application with the UniProt Java API.
+Using provided data retrieval services you can retrieve a single UniProt,
+UniParc or UniRef entry with a given accession number, or the whole entry sets
+matching a query.
+
+UniProt Java API use Spring framework (http://www.springframework.org) "httpinvoker" module
+for a remote data access.Spring's HTTP invoker provides a special remoting strategy which
+allows for Java serialization via HTTP, supporting any Java interface.
+
+2. DISTRIBUTION
+
+./src - Source files for examples on using the UniProtJAPI
+./classes - The pre-compiled sources
+./lib - Library's required to run the UniProtJAPI including the UniProtJAPI
+./doc - Documenation and JavaDoc of Object model.
+
+
+3. RUN THE EXAMPLES
+
+use the runExample script provided .cmd for windows for .sh most other enviroments. The script requires a single
+parameter which is the name of the test to be run. The test's can be found in the /src directory. 
+
+e.g. on windows
+
+runExample.cmd AttributeExample
+
+on unix
+
+sh runExample.sh AttributeExample
+
+This command will run then the AttributeExample class located in the /classes directory

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>UniProt Accessor</name>
+    
+    <shortDescription>
+        Accesses the UniProt data source (via webservices) which is maintained by a consortium including the
+        European Bioinformatics Institute (EBI).
+    </shortDescription>
+    
+    <fullDescription>
+        <intro> Provides access to the <a href="http://www.uniprot.org">UniProtKB data source</a> which is maintained by a consortium including the
+        European Bioinformatics Institute (EBI). This node provides most of the data supported by UniProt,
+        UniRef and UniPARC in a tabular format, ready for processing by other KNIME nodes. This node is 
+        deliberately slow to avoid overloading the remote web servers which provide the data.
+        
+        A later edition of this node will provide for custom uniprot queries.
+        </intro>
+        
+        <option name="Task">Select what you want the node to do:
+        <ol>
+        	<li>Access UniProt: provide the accessions which you want UniProt data for</li>
+        	<li>Access UniRef: you must specify the required level of clustering identity amongst cluster
+        	members (50%, 90% and 100% requirement)</li>
+        	<li>Access UniPARC: specify the UPI number or full-length sequence which you require data for</li>
+        </ol>
+        </option>
+        
+        <option name="Accession">Which column contains the UniProtKB accessions eg. <tt>QA55DA</tt>, the
+        node will not report anything if the column does not contain suitable data. You'll need to manually
+        check which accessions gave you hits.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Data containing the required accession/sequence data</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="UniProt data">UniProtKB data</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+    
+</knimeNode>

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PICRAccessor-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.misc.picr; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: picraccessor.jar
+Bundle-Activator: au.com.acpfg.misc.picr.PICRAccessorNodePlugin
+Bundle-Vendor: Andrew Cassin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Eclipse-LazyStart: true
+Export-Package: au.com.acpfg.misc.picr
+

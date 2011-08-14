@@ -1,0 +1,39 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WUBlast-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.misc.blast.wublast; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: wublast.jar,
+ lib/activation.jar,
+ lib/axis.jar,
+ lib/nanoxml-2.2.3.jar,
+ lib/WUBlast_Axis1.jar,
+ lib/jaxrpc.jar,
+ lib/commons-discovery-0.2.jar,
+ lib/wsdl4j-1.5.1.jar,
+ lib/mail.jar
+Bundle-Activator: au.com.acpfg.misc.blast.wublast.WUBlastNodePlugin
+Bundle-Vendor: Andrew Cassin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base,
+ au.com.acpfg.misc.biojavamanipulator;bundle-version="1.0.0"
+Eclipse-LazyStart: true
+Export-Package: au.com.acpfg.misc.blast.wublast,
+ javax.xml.rpc,
+ javax.xml.rpc.encoding,
+ org.apache.axis,
+ org.apache.axis.client,
+ org.apache.axis.constants,
+ org.apache.axis.description,
+ org.apache.axis.encoding,
+ org.apache.axis.encoding.ser,
+ org.apache.axis.soap
+Import-Package: au.com.acpfg.xml.reader,
+ javax.xml.rpc,
+ org.apache.commons.cli,
+ org.apache.commons.logging;version="1.0.4",
+ org.biojava.bio.program.ssbind
+

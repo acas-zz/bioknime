@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AlignmentWriter-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.phylogeny.writer; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: alignmentwriter.jar
+Bundle-Activator: au.com.acpfg.phylogeny.writer.AlignmentWriterNodePlugin
+Bundle-Vendor: Andrew Cassin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Bundle-ActivationPolicy: lazy
+Export-Package: au.com.acpfg.phylogeny.writer
+Import-Package: au.com.acpfg.align.muscle
+

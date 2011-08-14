@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Sink">
+    <name>Alignment Writer</name>
+    
+    <shortDescription>
+        Saves one or more alignments to disk
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Saves an alignment cell column (consisting of one or more alignments) to disk in the
+        specified format. This node is useful for making KNIME alignments available to other programs
+        eg. PAUP, Mesquite or Java PAL.</intro>
+        
+        
+        <option name="Folder">Folder to save alignments (one file per alignment cell) to</option>
+        <option name="Alignment Format">Only CLUSTALW/X is supported for now</option>
+        <option name="Alignment Column">Column which contains the alignment cells</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Alignment column">Input data containing a column of an Alignments eg. MUSCLE EBI node</inPort>
+        <!-- possibly more input ports here-->
+       
+    </ports>    
+</knimeNode>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>WU-BLAST Accessor</name>
+    
+    <shortDescription>
+        Performs a WU-BLAST 2.0 (incl. gaps) with the chosen parameters using the EBI webservices.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Performs a WU-BLAST with the chosen parameters using the EBI webservices.  
+        More details can be found at <a href="http://www.ebi.ac.uk/Tools/webservices/">Webservices@EBI</a>
+        
+        <p><b>NOTE</b>: this node restricts performance to limits well-within
+        those required by EBI:
+        <ol>
+           <li>No more than 25 BLAST jobs will be submitted to EBI per user/per-node at one time</li>
+           <li>20 second wait for the jobs to be processed (mandatory)</li>
+           <li>Checking to see if all jobs currently submitted have completed and then submitting the next batch. This checking 
+               linearly backs-off the longer the job is taking.</li>
+        </ol>
+        </p>
+        
+      
+        <b>WARNING:</b> Users bypassing these constraints will find EBI ban them (and probably their entire organization) from accessing the service.
+         
+        <p><b>WARNING:</b> Data passed to this node is subject to EBI's terms and conditions. Confidential sequence data should not be given
+        to this node, unless you are sure of what you are doing.</p>
+        
+        <p>All input columns are output to each port, to preserve existing information. The node will fail if the column names required by this
+        node already exist.</p>
+        </intro>
+        
+        
+        <option name="Column containing blast sequences">Nucleotide/Amino Acid sequence. Must be correct for the BLAST program chosen (no sequence conversion takes place).</option>
+        <option name="Sequence Type">Choose the appropriate type of sequence for the sequence column. Currently, all rows must be of this type or results will be undefined.</option>
+        <option name="Email address">Email address is required by EBI should there be a problem with the jobs. This must be a valid email address or you risk being banned.</option>
+    	<option name="Databases">All EBI WU-BLAST Databases will appear in this list. The entire UniProt (reviewed+not reviewed) is the default</option>
+    	<option name="BLAST Program">Choose the appropriate blast variant for the type of sequence. This node does not convert sequence data.</option>
+    	<option name="Scoring Matrix">BLOSUM62 is a good default for protein sequence, identity for nucleotide sequence</option>
+    	<option name="Filters">Low complexity filter: choose 'seg' for protein, 'DUST' for nucleotide</option>
+    	<option name="Sensitivity">Choose the <i>ktup</i> parameter (higher sensitivity takes longer at EBI)</option>
+    	<option name="Sort criteria">Kinda useless, given KNIME's capabilities, but provided for completeness with EBI</option>
+    	<option name="Statistics">Distribution desired for results</option>
+    	<option name="Number of reported alignments">Provide the best-50 (by default) alignments in the results - per sequence</option>
+    	<option name="Number of reported scores">Provide the best-50 (by default) scores in the results - per sequence</option>
+    	<option name="Maximum Expectation Value">Do not report results above the specified E-value for a given sequence</option>
+    	<option name="EBI Batch Size">the number of concurrent BLASTS which may be outstanding at any time. Maximum 25.</option>
+  		<option name="Save image summary?">In the first output port, a column with a visual depiction of the blast hits will be shown if checked.
+  		May slow down the performance of the node, so it is off by default (cells will be blank)</option>
+ 	</fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input sequence data">Provides the sequence column which is to be blasted. Other columns will be copied to the output.</inPort>
+        
+       
+        <outPort index="0" name="Raw results">Provides the EBI jobID, XML and graphical summary (iff enabled) of results for each BLAST sequence.</outPort>
+        <outPort index="1" name="Formatted results">Provides a select view of results: with key columns only. Useful for further KNIME processing, where
+        only the key information is required (E-value, accession etc.). Other columns will be copied to the output.</outPort>
+        
+        <!-- possibly more output ports here-->
+    </ports>    
+   
+</knimeNode>

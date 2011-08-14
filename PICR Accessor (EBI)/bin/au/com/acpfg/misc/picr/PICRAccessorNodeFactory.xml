@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>PICR Accessor</name>
+    
+    <shortDescription>
+        Provides access to the Protein Identifier Cross Reference (PICR) web service at EBI
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>The <a href="http://www.ebi.ac.uk/Tools/picr/">PICR</a> web service provides mapping from sequence and/or accession to the
+        specified set of databases. It is useful for many problems where you must work with
+        multiple database entries. Maps do contain errors, however, so be careful during your analysis.
+        The UniProt node provides similar functionality as well, so you may wish to compare.
+        <p>
+        Results are in one of two forms:
+        <ol>
+        	<li><em>Logical</em>: a relationship between two sequences as designated by a curator</li>
+        	<li><em>Identical</em>: a relationship based on the identity of the two sequences</li>
+        </ol>
+        This node clearly marks each result. PICR supports over eighty databases, however, you can
+        choose to only provide entries in a particular database (if they exist!). Furthermore, you can
+        restrict map entries to a particular NCBI taxon ID or just those map entries which are still
+        active.
+        </p>
+        </intro>
+        
+        <option name="Accessions">Select the column to use for accessions to give to PICR. These must
+        be in a compatible format. It is also possible to choose a (protein) sequence column, although
+        these should be full length sequences for best results.</option>
+        
+        <option name="Databases to map to">Select the (multiple) databases which you want the accession/sequence mapped to</option>
+    
+    	<option name="NCBI taxonomy ID">To restrict map entries to a particular species in a valid
+    	NCBI taxonomy ID or choose one from the list of available (popular) species.</option>
+    	
+    	<option name="Active only?">To remove inactive entries from results, select this option.</option>
+    	
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Includes column with accession/sequence to be mapped</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="PICR map entries">Input accession/sequence with map entries from PICR</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+  
+</knimeNode>
