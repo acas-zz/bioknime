@@ -5,6 +5,7 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentButton;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -28,11 +29,14 @@ public class MinProteinListNodeDialog extends DefaultNodeSettingsPane {
     protected MinProteinListNodeDialog() {
     	final SettingsModelString matches = new SettingsModelString(MinProteinListNodeModel.CFGKEY_PEPTIDES, "Peptides");
     	final SettingsModelString accsn   = new SettingsModelString(MinProteinListNodeModel.CFGKEY_PROTEIN, "Protein");
-   
-        addDialogComponent(new DialogComponentColumnNameSelection(accsn, "Accession Column", 0, true, StringValue.class));
+    	final String[] items = new String[] {
+    		"ILP: Minimum Set Cover (all proteins equal cost)",
+    		"ILP: Minimum Set Cover (Unique Peptide Weighting, experimental)"
+    	};
+        addDialogComponent(new DialogComponentColumnNameSelection(accsn,   "Accession Column", 0, true, StringValue.class));
         addDialogComponent(new DialogComponentColumnNameSelection(matches, "Matching Peptides Column", 0, true, StringValue.class));
-       
-        
+        addDialogComponent(new DialogComponentFileChooser(new SettingsModelString(MinProteinListNodeModel.CFGKEY_SOLVER, "c:/cygwin/bin/glpsol.exe"), "glpk-solver-history"));
+        addDialogComponent(new DialogComponentStringSelection(new SettingsModelString(MinProteinListNodeModel.CFGKEY_ALGO, items[0]), "Algorithm", items));
     }
 }
 

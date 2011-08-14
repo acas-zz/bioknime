@@ -53,10 +53,12 @@ public class MinProteinListNodeModel extends NodeModel {
 	static final String CFGKEY_PEPTIDES = "peptides";
 	static final String CFGKEY_PROTEIN  = "protein";
 	static final String CFGKEY_ALGO     = "algorithm";
+	static final String CFGKEY_SOLVER   = "solver-program";
 	
 	private final SettingsModelString m_peptide_column = new SettingsModelString(CFGKEY_PEPTIDES, "Peptides");
 	private final SettingsModelString m_accsn_column   = new SettingsModelString(CFGKEY_PROTEIN, "Protein");
 	private final SettingsModelString m_algorithm      = new SettingsModelString(CFGKEY_ALGO, "ILP: Minimum Set Cover");
+	private final SettingsModelString m_solver         = new SettingsModelString(CFGKEY_SOLVER, "c:/cygwin/bin/glpsol.exe");
 	
     /**
      * Constructor for the node model.
@@ -136,6 +138,26 @@ public class MinProteinListNodeModel extends NodeModel {
     		}
     	}
     	
+    	// non-equal costs?
+    	HashMap<String,Double> costs = new HashMap<String,Double>();		// protein key -> weight (lower is better)
+    	if (m_algorithm.getStringValue().toLowerCase().contains("unique")) {
+    		for (String accsn : prot2lp.keySet()) {
+    			String    pep_csv = prot2pep.get(accsn);
+    			String[] peptides = pep_csv.split(",\\s+");
+    			int unique_cnt = 0;
+    			for (String pep : peptides) {
+    				Set<String> s = pep2protkeys.get(pep);
+    				if (s.size() == 1)
+    					unique_cnt++;
+    			}
+    			
+    			// NB: cost = 1 if there are no unique peptides
+    			if (unique_cnt > 0) {
+    				costs.put(prot2lp.get(accsn), new Double(1.0/(unique_cnt+1)));
+    			}
+    		}
+    	}
+    	
     	// create a cplex-style file with the necessary ILP formulation
     	File  tmp_file = File.createTempFile("minprotset", ".lp");
     	PrintWriter pw = new PrintWriter(new FileWriter(tmp_file));
@@ -144,7 +166,13 @@ public class MinProteinListNodeModel extends NodeModel {
     	Collection<String> c = prot2lp.values();
     	Iterator<String> it2 = c.iterator();
     	for (int i=0; i<c.size(); i++) {
-    		pw.print(it2.next());
+    		String prot_key = it2.next();
+    		Double cost = costs.get(prot_key);
+    		if (cost != null) {
+    			pw.print(cost);
+    			pw.print(" ");
+    		}
+    		pw.print(prot_key);
     		if (i<c.size()-1) {
     			pw.print(" + ");
     		}
@@ -176,7 +204,7 @@ public class MinProteinListNodeModel extends NodeModel {
     	
     	// run cplex to compute a solution... (hopefully!)
     	List<String> args = new ArrayList<String>();
-    	args.add("c:/cygwin/bin/glpsol.exe");
+    	args.add(m_solver.getStringValue());
     	args.add("--min");
     	args.add("--lp");
     	args.add(tmp_file.getAbsolutePath());
@@ -278,6 +306,7 @@ public class MinProteinListNodeModel extends NodeModel {
          m_peptide_column.saveSettingsTo(settings);
          m_accsn_column.saveSettingsTo(settings);
          m_algorithm.saveSettingsTo(settings);
+         m_solver.saveSettingsTo(settings);
     }
 
     /**
@@ -289,6 +318,7 @@ public class MinProteinListNodeModel extends NodeModel {
         m_peptide_column.loadSettingsFrom(settings);
         m_accsn_column.loadSettingsFrom(settings);
         m_algorithm.loadSettingsFrom(settings);
+        m_solver.loadSettingsFrom(settings);
     }
 
     /**
@@ -300,6 +330,7 @@ public class MinProteinListNodeModel extends NodeModel {
     	  m_peptide_column.validateSettings(settings);
           m_accsn_column.validateSettings(settings);
           m_algorithm.validateSettings(settings);
+          m_solver.validateSettings(settings);
     }
     
     /**
