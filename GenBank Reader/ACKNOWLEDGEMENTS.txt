@@ -1,0 +1,7 @@
+This node can use BioJava Genbank record reader, but does not do so by default for speed.
+
+As such we acknowedge the good BioJava (http://www.biojava.org) work, but dont use it by default.
+Sorry...
+
+Andrew Cassin
+acassin@unimelb.edu.au

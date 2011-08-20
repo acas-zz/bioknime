@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GenBankReader-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.io.genbank.reader; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: genbankreader.jar
+Bundle-Activator: au.com.acpfg.io.genbank.reader.GenBankReaderNodePlugin
+Bundle-Vendor: http://www.plantcell.unimelb.edu.au
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Bundle-ActivationPolicy: lazy
+Export-Package: au.com.acpfg.io.genbank.reader
+

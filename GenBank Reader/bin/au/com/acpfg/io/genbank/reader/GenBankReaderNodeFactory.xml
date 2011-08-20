@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>Genbank Reader</name>
+    
+    <shortDescription>
+        This node is a quick-and-dirty implementation of the Genbank file format, designed for
+        extraction of data (eg. for a particular species) from a genbank mirror. As such it should
+        be considered for serious use with care.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro> This node reads the specified
+        <a href="http://en.wikipedia.org/wiki/Genbank">Genbank format</a> files/folder for compressed and/or uncompressed files 
+        and loads the key metadata (including features) into one of three output ports. Coding sequence data is
+        placed into the "CDS data", source material metadata is placed into the "Source Features" table, and
+        sequence related data is placed into the first output port. 
+        
+        <p><b>WARNING:</b>this node does not comply with all aspects for the file format. The intention is
+        to be fast, rather than standards compliant. Most major portions of the sequence data are available.</p>
+        </intro>
+        
+        <option name="load single file?">If checked, a single file is loaded, otherwise a folder in which all suitable files are read.</option>
+        <option name="Filename">A compressed (gzip only) or uncompressed file may be chosen</option>
+        <option name="Folder">A folder which contains the genbank files (compressed or not). Subfolders are not searched</option>
+        <option name="Data to load">Currently ignored. Most data is already loaded into the table.</option>
+        <option name="Filter by taxonomy"><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/">Enter keywords</a> (only one is required to match) to accept a given entry. This
+        can be either a lineage term or a keyword from a scientific name</option>
+        <option name="Filter by filename">Genbank standardises filenames, if you are only interested in a subset of filenames eg. EST sequences only from genbank you might specify
+        a filename keyword of <tt>gbest</tt>. Only one keyword is required to match to accept the file.</option>
+        <option name="Source Features">If selected, causes the node to place source metadata for each accession at the second output port</option>
+        <option name="CDS Features">If selected, causes the node to place CDS metadata for each accession at the third output port. Not all
+        species have this information available so don't be surprised if no output is produced even if selected.</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Summary data">Key fields for each matching accession that everyone will want</outPort>
+        <outPort index="1" name="Source Features">Only present if configured in the node</outPort>
+        <outPort index="2" name="CDS Features">Only present if configured in the node</outPort>
+        
+        <!-- possibly more output ports here-->
+    </ports>    
+</knimeNode>

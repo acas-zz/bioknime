@@ -1,0 +1,18 @@
+
+This KNIME node provides access to the UniProtKB (www.uniprot.org) database
+using the client developed by the European Bioinformatics Institute (EBI).
+More details about the client can be found at:
+
+http://www.ebi.ac.uk/uniprot/
+
+It also provides a way to convert between different identifiers (accessions)
+in addition to the PICR EBI web site/service. This node includes all
+dependancies of the client eg. Apache commons code also which is distributed
+under the Apache v2.0 license as described at the following website:
+
+http://commons.apache.org
+
+
+
+Andrew Cassin
+acassin@unimelb.edu.au
