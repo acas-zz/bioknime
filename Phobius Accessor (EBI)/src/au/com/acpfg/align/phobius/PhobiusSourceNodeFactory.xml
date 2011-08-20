@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>Phobius Accessor</name>
+    
+    <shortDescription>
+        Takes a list of sequences and appends the results of Phobius webservice invocations (text only for now) to the output port
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node provides access to the <a href="http://www.ebi.ac.uk/tools/webservices/">Phobius webservice</a>
+         at the European Bioinformatics Institute (EBI). The node is designed to access EBI slowly, to ensure EBI computer's
+         are not overloaded, which is not user-configurable. Raw results and decoded results are provided to give the
+         user control over what results to use for further computation</intro>
+        
+        
+        <option name="Protein Sequence column">The column which contains the protein sequence (amino acid) to use for each phobius search. This
+        data is not modified in any way prior to being sent to EBI.</option>
+        
+        <option name="Email Address">The user of the node must provide a valid email address in case EBI want to contact you
+        to report a problem with the jobs you submit. <b>WARNING:</b> Failure to provide a valid address may result in your computer or
+        your entire network being banned from EBI.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Protein Sequences">Input table including a column of protein sequences</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Phobius Results">Output data, all input columns are preserved but with the phobius columns added. This node will fail if there are columns already
+         existing with the same names as what the node wants to add, an error will be issued.</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+    
+</knimeNode>
