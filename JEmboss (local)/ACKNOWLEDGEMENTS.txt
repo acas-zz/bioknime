@@ -1,0 +1,15 @@
+
+This node relies upon an installation of the mEMBOSS toolkit 
+(ftp://emboss.open-bio.org/pub/EMBOSS/windows/) to be installed 
+on the same computer as KNIME.
+
+EMBOSS is distributed under the GPL license as described here:
+http://emboss.sourceforge.net/licence/
+
+
+We thank the EMBOSS authors for their tireless efforts and work.
+
+Andrew Cassin
+acassin@unimelb.edu.au
+
+

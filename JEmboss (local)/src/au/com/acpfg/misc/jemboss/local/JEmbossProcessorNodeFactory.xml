@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>JEmboss Processor (local)</name>
+    
+    <shortDescription>
+        Runs an EMBOSS command on the local computer, based on the configure-dialog settings. Input data is taken from the input table and automatically converted into a suitable form for EMBOSS based on the chosen program.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Runs an EMBOSS command on the local computer, based on the configure-dialog settings. 
+        Input data is taken from the input table and automatically converted into a suitable form for 
+        EMBOSS based on the chosen program. It has only been tested with the windows binary (mEMBOSS) version 6.3.1
+        as downloaded via <a href="http://emboss.sourceforge.net">the EMBOSS website</a>
+		</intro>
+        
+        <option name="Program to run">Once chosen, the parameters for the chosen program can be customised</option>
+		<option name="Batch size">In some cases, increasing this value can improve performance</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Input data</inPort>
+        
+        <outPort index="0" name="Raw Output">Raw output from EMBOSS</outPort>
+        <outPort index="1" name="Formatted Results">Formatted results for downstream analysis</outPort>
+    </ports>    
+  
+</knimeNode>
