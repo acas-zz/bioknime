@@ -17,6 +17,13 @@ import pal.datatype.Nucleotides;
 import pal.misc.Identifier;
 
 
+/**
+ * This cell supports multiple alignments (internally represented using a PAL 1.5 Alignment
+ * instance) and is used as the basis for much of the phylogenetic nodes
+ * 
+ * @author andrew.cassin
+ *
+ */
 public class MultiAlignmentCell extends DataCell implements AlignmentValue, Serializable {
 	/**
 	 * This class uses java.io.Serializable rather than the KNIME serialisation code. Although
