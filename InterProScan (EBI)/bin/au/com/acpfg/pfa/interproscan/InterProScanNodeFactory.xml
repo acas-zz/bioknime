@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>InterProScan Accessor</name>
+    
+    <shortDescription>
+        Accesses the InterProScan web service (provided by EBI) with the user-specified settings. This node
+        selects the chosen (protein) sequence column and sends each sequence to EBI for analysis. 
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Accesses the InterProScan web service (provided by EBI) with the user-specified settings. This node
+        selects the chosen (protein) sequence column and sends each sequence to EBI for analysis. The results
+        are appended to the input columns. The input RowID is used as the title for each job with EBI (for manual
+        web browsing of the results.
+        <p>
+        <b>WARNING</b>: intellectual property may be exposed to the Internet by use of this node.  
+        Use this node only if you are satisfied with EBI's <a href="http://www.ebi.ac.uk/Information/termsofuse.html">terms of service</a>.
+        </p>
+        </intro>
+        
+        
+        <option name="email address">Required by EBI, this ensures they can contact you if there is a problem
+        with your jobs during processing</option>
+        <option name="protein sequence">Select the compatible input column to use for the <b>protein</b> sequences with
+        InterProScan</option>
+        <option name="Use CRC?">If selected, CRC methods will be used by InterProScan (recommended unless
+        you are unhappy with the results as it is faster)</option>
+        <option name="Algorithms to search via">Perform family identifications using the selected algorithms (all are recommended unless you have problems with some algorithms with your data)</option>
+        <option name="Save graphical results to folder?">If selected, you are prompted to specify a folder where an image visually representing
+        the results for each sequence will be saved (the images will have the save name as the EBI-assigned JobID). These images will
+        also be in the output table (as the last column).</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Protein Sequence Input">Input containing a single column with protein sequence(s) to search</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Protein family data">Results from InterProScan (XML &amp; image results available). Although
+        the input columns are not retained, you can join them back based on RowID if you want.</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+ 
+</knimeNode>
