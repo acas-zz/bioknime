@@ -4,13 +4,18 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -23,21 +28,19 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.util.ColumnFilter;
 import org.knime.core.node.util.ColumnSelectionPanel;
 
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
 /**
@@ -53,10 +56,11 @@ public class SequenceSetting extends StringSetting {
 	private final JCheckBox m_ignore = new JCheckBox("ignore?");
 	
 	public SequenceSetting(HashMap<String,String> attrs) {
-		super(attrs);
-		m_from_column = true;
+		super(attrs);	// WILL save the value eg. column name
 		if (hasAttribute("from-column?")) {
 			m_from_column = new Boolean(attrs.get("from-column?")).booleanValue();
+		} else {
+			m_from_column = false;
 		}
 		if (hasAttribute("ignore?")) {
 			m_ignore.setSelected(new Boolean(getAttributeValue("ignore?")));
@@ -252,7 +256,6 @@ public class SequenceSetting extends StringSetting {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					m_from_column = false;
 					Object o = ((JComboBox)arg0.getSource()).getSelectedItem();
 					if (o instanceof DataColumnSpec) {
 						setValue(((DataColumnSpec)o).getName());
@@ -285,6 +288,21 @@ public class SequenceSetting extends StringSetting {
 	}
 
 	@Override
+	public void addColumns(AbstractTableMapper atm) {
+		super.addColumns(atm);
+		if (isOutput()) {
+			// this class supports dumping out fasta sequences into a KNIME table (formatted output port)
+			// so here we add the columns as required by KNIME
+			List<DataColumnSpec> fasta_columns = new ArrayList<DataColumnSpec>();
+			fasta_columns.add(new DataColumnSpecCreator(getName()+":ID", StringCell.TYPE).createSpec());
+			fasta_columns.add(new DataColumnSpecCreator(getName()+":Description", StringCell.TYPE).createSpec());
+			fasta_columns.add(new DataColumnSpecCreator(getName()+":Sequence", StringCell.TYPE).createSpec());
+			
+			atm.addFormattedColumns(this, fasta_columns);
+		}
+	}
+	
+	@Override
 	public void copy_attributes(HashMap<String,String> attrs) {
 		super.copy_attributes(attrs);
 		attrs.put("from-column?", new Boolean(m_from_column).toString());
@@ -292,34 +310,125 @@ public class SequenceSetting extends StringSetting {
 	}
 
 	@Override
-	public DataType getCellType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void getArguments(ProgramSettingsListener l) throws IOException {
+	public void getArguments(ProgramSettingsListener l) throws InvalidSettingsException,IOException {
 	    String t = getType();
+	    
+	    // input-by-file specified but no file chosen?
+	    String v = getValue();
+	    
+	    if (!m_from_column && (v== null  || v.length()<1))
+	    	throw new InvalidSettingsException("No file chosen for: "+getName());
+	    
+	    // if ignore is chosen, it does not appear on the emboss command line... so...
 	    if (m_ignore.isSelected())
 	    	return;
 	    
 	    if (t.equals("sequence") || t.equals("seqall")) {
 	    	File f = File.createTempFile("infile", ".fasta");
 	    	l.addInputFileArgument(this, "-"+getName(), f);
+	    } else if (t.equals("outseq") || t.equals("seqoutall") || t.equals("seqoutseq")) {
+	    	File f = File.createTempFile("outseq", ".fasta");
+	    	l.addOutputFileArgument(this, "-"+getName(), f);
+	    } else {
+	    	throw new InvalidSettingsException("Invalid argument type: "+t+" for "+getName());
 	    }
 	}
 
 	@Override
-	public DataCell unmarshal(File out_file, BufferedDataContainer c2, String rid) throws IOException, InvalidSettingsException {
-		// TODO Auto-generated method stub
-		return null;
+	public void unmarshal(File out_file, AbstractTableMapper atm) throws IOException, InvalidSettingsException {
+		if (out_file == null)
+			return;
+		
+		StringBuffer seq_sb = new StringBuffer((int)out_file.length());
+		BufferedReader rdr = new BufferedReader(new FileReader(out_file));
+		String line;
+		while ((line = rdr.readLine()) != null) {
+			seq_sb.append(line);
+			seq_sb.append('\n');
+		}
+		rdr.close();
+		
+		String sequences_as_fasta = seq_sb.toString();
+		save_formatted(sequences_as_fasta, atm);
+		
+		atm.setRawOutputCell(this, new StringCell("<html><pre>"+sequences_as_fasta));
+		atm.emitRawRow();
 	}
 
-	@Override
-	public void addFormattedColumns(List<DataColumnSpec> out_cols) {
-		// TODO...
+	private void save_formatted(String sequences_as_fasta, AbstractTableMapper atm) throws IOException {
+		 boolean done = false;
+		 boolean already_got_header = false;
+		 BufferedReader rseq = new BufferedReader(new StringReader(sequences_as_fasta));
+		 String line = null;
+         String accsn, descr;
+         StringBuffer seq;
+
+		 
+		 Pattern hdr_pattern = Pattern.compile("^(\\S+)\\s*(.*)$");
+		 while (!done) {
+	    	   
+	    	    // get header line
+	    	    if (!already_got_header) {
+		    	    do {
+		    	    	line = rseq.readLine();
+		    	    	if (line == null) {
+		    	    		done = true;
+		    	    		break;
+		    	    	}
+		    	    } while (!line.startsWith(">"));
+	    	    }
+	    	    
+	    	    if (!done) {
+	    	    	  String[] entries = line.split("\\x01");
+		              if (entries.length > 0 && entries[0].startsWith(">")) {
+		                	entries[0] = entries[0].substring(1);	// skip over >
+		              }
+		              Matcher m = hdr_pattern.matcher(entries[0]);
+		              if (!m.find()) {
+		            	  throw new IOException("Invalid result sequence: no accession specified!");
+		              }
+		              accsn = m.group(1);
+		              descr = m.group(2);
+		              String tline;
+		              seq = new StringBuffer(10 * 1024);
+		              boolean got_seq = false;
+		              already_got_header = false;
+		              int tline_len = 0;
+		              do {
+		            	  if ((line = rseq.readLine()) == null) {
+		            		  already_got_header = false;
+		            		  break;
+		            	  }
+		            	  tline         = line.trim();
+		            	  tline_len     = tline.length();
+		            	  if (tline_len > 0) {
+			            	  char first_c  = tline.charAt(0);
+			            	  if (first_c == '>') {
+			            		  got_seq = false;
+			            		  already_got_header = true;
+			            		  break;
+			            	  } 
+			            	  
+			            	  if (Character.isLetter(first_c) || first_c == '*' || first_c == '-') {
+			            		  seq.append(tline);
+			            		  got_seq = true;
+			            	  }
+		            	  }
+		              } while (tline_len == 0 || got_seq );
+		              
+		              // save the sequence to the container
+			    	  HashMap<String,DataCell> cellmap = new HashMap<String,DataCell>();
+			    	  cellmap.put(getName()+":ID", new StringCell(accsn));
+			    	  cellmap.put(getName()+":Description", new StringCell(descr));
+			    	  cellmap.put(getName()+":Sequence", new StringCell(seq.toString()));
+			    	  atm.setFormattedCells(cellmap);
+			    	  atm.emitFormattedRow();
+	    	    }
+	            
+	    	 
+	        }
 	}
-	
+
 	public static boolean canEmboss(String acd_type) {
 		if (acd_type.equals("sequence") || acd_type.equals("seqall") ||  
 				acd_type.equals("outseq") || acd_type.equals("seqoutall") || 

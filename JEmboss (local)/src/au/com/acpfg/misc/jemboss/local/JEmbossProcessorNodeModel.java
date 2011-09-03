@@ -94,7 +94,7 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     	HashMap<Integer,ProgramSetting> idx2ps = new HashMap<Integer,ProgramSetting>();
     	
     	// 0. load key data from the dialog into internal form
-    	String input_ser = m_input_ser.getStringValue();
+    	String         input_ser = m_input_ser.getStringValue();
     	ProgramSettingsModel mdl = new ProgramSettingsModel();
     	
     	if (input_ser.length() > 0)	
@@ -108,33 +108,7 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
         m_args = new ArrayList<String>();
         m_args.add(prog);
         make_args(mdl);
-    
-    	// compute second output port columns
-		ArrayList<DataColumnSpec> out2_cols = new ArrayList<DataColumnSpec>();
-		out2_cols.add(new DataColumnSpecCreator("RowID", StringCell.TYPE).createSpec());
-		
-    	// compute the output columns based on user settings and expected binary data (eg. PNG images)
-    	ArrayList<DataColumnSpec> cols = new ArrayList<DataColumnSpec>();
-    	cols.add(new DataColumnSpecCreator("RowIDs", StringCell.TYPE).createSpec());
-    	cols.add(new DataColumnSpecCreator("Run status", IntCell.TYPE).createSpec());
-    	cols.add(new DataColumnSpecCreator("Runtime Output (if any)", StringCell.TYPE).createSpec());	// stdout
-    	cols.add(new DataColumnSpecCreator("Runtime Errors (includes description)", StringCell.TYPE).createSpec());	// stderr for each invocation ie. batch
-    	int col_idx = 4;
-    	for (ProgramSetting ps : mdl) {
-    		if (ps.isOutput() && m_output_files.containsKey(ps)) {
-	    		idx2ps.put(new Integer(col_idx), ps);
-	    		cols.add(new DataColumnSpecCreator(ps.getName(), ps.getCellType()).createSpec());
-	    		ps.addFormattedColumns(out2_cols);
-	    		col_idx++;
-    		}
-    	}
-    
-    	DataTableSpec dt = new DataTableSpec(cols.toArray(new DataColumnSpec[0]));
-    	// traverse the input data, invoking local emboss install as required
-        final BufferedDataContainer container = exec.createDataContainer(dt);
-        DataTableSpec spec2 = new DataTableSpec(out2_cols.toArray(new DataColumnSpec[0]));
-		BufferedDataContainer c2 = exec.createDataContainer(spec2);
-		
+  
         // compute environment variables based on KNIME with the emboss root specified
         Map<String,String> env = System.getenv();
         ArrayList<String> emboss_env = new ArrayList<String>();
@@ -160,9 +134,23 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     	RowIterator it = inData[0].iterator();
     	int     n_rows = inData[0].getRowCount();
     	double    done = 0.0;
-    	int        run = 0;
+    	final int        run = 0;
+    	final int formatted_rows = 0;
 		int n_in_batch = 0;
 		int batch_size = m_batch_size.getIntValue();
+		  
+    	// compute second output port columns
+		
+    	// compute the output columns based on user settings and expected binary data (eg. PNG images)
+        final RawAndFormattedTableMapper om = new RawAndFormattedTableMapper(null, null);
+    	for (ProgramSetting ps : mdl) {
+    		ps.addColumns(om);
+    	}
+    
+    	// traverse the input data, invoking local emboss install as required
+        final BufferedDataContainer container = exec.createDataContainer(om.getRawTableSpec());
+		final BufferedDataContainer c2 = exec.createDataContainer(om.getFormattedTableSpec());
+		om.setContainers(container, c2);
 		
 		try {
 			
@@ -176,7 +164,8 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     			DataCell c = r.getCell(in_col2idx.get(ps.getColumnName()).intValue());
     			if (c == null || c.isMissing()) {
     				logger.warn("Skipping row "+rid+" as it is missing "+ps.getColumnName());
-    				skip = true; break;
+    				skip = true; 
+    				break;
     			} else {
 	    			File infile = m_input_files.get(ps);
 	    			PrintWriter fw = new PrintWriter(new FileWriter(infile));
@@ -204,26 +193,11 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
             rea.getProcess().destroy();
             
     		// load results of each batch run into output table
-    		DataCell[] cells = new DataCell[cols.size()];
-    		for (int i=0; i<cells.length; i++) {
-    			cells[i] = DataType.getMissingCell();
+    		om.addRequiredCells(rid, status, stdout, stderr);
+    		for (ProgramSetting ps : mdl) {
+    			File out_file = m_output_files.get(ps);
+    			ps.unmarshal(out_file, om);
     		}
-    		cells[0] = new StringCell(rid);
-    		cells[1] = new IntCell(status);
-    		cells[2] = new StringCell("<html><pre>"+stdout);
-    		cells[3] = new StringCell("<html><pre>"+stderr);
-    		for (int i=3; i<cells.length; i++) {
-    			Integer j = new Integer(i);
-    			// output file as specified by the command-line args?
-    			if (idx2ps.containsKey(j)) {
-    				ProgramSetting out_ps = idx2ps.get(j);
-    				File out_file = m_output_files.get(out_ps);
-    				if (out_file != null) {
-    					cells[j.intValue()] = out_ps.unmarshal(out_file, c2, rid);
-    				}
-    			}
-    		}
-    		container.addRowToTable(new DefaultRow("Invocation"+run++, cells));
     		
     		exec.checkCanceled();
     		exec.setProgress(done++/n_rows, "Processed row "+rid);
@@ -299,11 +273,7 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     	m_input_files.clear();
     	m_output_files.clear();
     	for (ProgramSetting ps : psm) {
-    		try {
-    			ps.getArguments(this);
-    		} catch (InvalidSettingsException e) {
-    			logger.warn("Skipping unknown argument: "+e.getMessage());
-    		}
+    		ps.getArguments(this);
     	}
     }
     
@@ -498,13 +468,14 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
 	@Override
 	public void addOutputFileArgument(final ProgramSetting ps, String opt, File out_file) {
 		m_args.add(opt);
-		if (ps.isOutputFeatures())
+		if (ps.isFeatureOutput())
 			m_args.add(out_file.getName());
 		else
 			m_args.add(out_file.getAbsolutePath());
+		
 		if (out_file.length() < 1) {			// SAFETY: dont delete anything with data which exists prior to execute()
 			m_output_files.put(ps, out_file);
-			logger.debug("got output file: "+ps);
+			//logger.debug("got output file: "+ps);
 		}
 	}
 

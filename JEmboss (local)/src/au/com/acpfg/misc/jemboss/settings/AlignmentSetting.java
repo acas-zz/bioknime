@@ -4,18 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
-
-import javax.swing.JComponent;
 
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 
-import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 
 /**
  * Setting to represent a multiple-sequence alignment (or pairwise) in the usual formats eg. CLUSTAL 
@@ -35,16 +28,8 @@ public class AlignmentSetting extends OutputFileSetting {
 	}
 
 	@Override
-	public DataCell unmarshal(File out_file, BufferedDataContainer c2,
-			String rid) throws IOException, InvalidSettingsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addFormattedColumns(List<DataColumnSpec> out_cols) {
-		// TODO Auto-generated method stub
-
+	public void unmarshal(File out_file, AbstractTableMapper om) {
+		
 	}
 	
 	public static boolean canEmboss(String acd_type) {

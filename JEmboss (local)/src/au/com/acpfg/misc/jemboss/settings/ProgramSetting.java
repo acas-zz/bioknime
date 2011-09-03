@@ -1,66 +1,26 @@
 package au.com.acpfg.misc.jemboss.settings;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.StringValue;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.data.image.png.PNGImageCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NotConfigurableException;
-import org.knime.core.node.util.ColumnFilter;
-import org.knime.core.node.util.ColumnSelectionPanel;
 
 import au.com.acpfg.misc.jemboss.io.FastaUnmarshaller;
 import au.com.acpfg.misc.jemboss.io.FormattedUnmarshallerInterface;
-import au.com.acpfg.misc.jemboss.local.JEmbossProcessorNodeModel;
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-
-import eu.medsea.mimeutil.MimeException;
-import eu.medsea.mimeutil.MimeUtil;
 
 /**
  * Simple implementation of a single program setting: name=value with slightly friendly improvements
@@ -197,7 +157,7 @@ public abstract class ProgramSetting {
 	 * 
 	 * @return
 	 */
-	public abstract DataType getCellType();
+	public abstract void addColumns(AbstractTableMapper atm);
 
 	/**
 	 * Returns the value of the setting (after the option)
@@ -228,7 +188,7 @@ public abstract class ProgramSetting {
 	 * @return This method must not return <code>null</code> (return a missing cell or throw instead)
 	 * @throws IOException
 	 */
-	public abstract DataCell unmarshal(File out_file, BufferedDataContainer c2, String rid) 
+	public abstract void unmarshal(File out_file, AbstractTableMapper atm) 
 								throws IOException,InvalidSettingsException;
 	/* {
 		if (m_type.equals("outfile") || m_type.equals("seqout") || 
@@ -307,7 +267,7 @@ public abstract class ProgramSetting {
 		return false;
 	}
 	
-	public boolean isOutputFeatures() {
+	public boolean isFeatureOutput() {
 		return getType().equals("featout"); // && isOutput() ???
 	}
 	
@@ -363,15 +323,6 @@ public abstract class ProgramSetting {
 		}
 		return make(attrs);
 	}
-	
-	/**
-	 * Responsible for adding the necessary columns for data associated with this setting in 
-	 * the output table (if any). The columns must be appended to out_cols by the implementation.
-	 * 
-	 * @param out_cols guaranteed non-<code>null</code>
-	 */
-	public abstract void addFormattedColumns(List<DataColumnSpec> out_cols);
-	
 
 	public boolean isNumber() {
 		return (this instanceof NumberSetting);

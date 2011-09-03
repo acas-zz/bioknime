@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,12 +14,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.JEmbossProcessorNodeModel;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
@@ -112,12 +109,6 @@ public class DataFileSetting extends ProgramSetting {
 	}
 
 	@Override
-	public DataType getCellType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void getArguments(ProgramSettingsListener l) throws IOException {
 		if (m_file != null)
 			l.addInputFileArgument(this, "-"+getName(), m_file);
@@ -131,22 +122,20 @@ public class DataFileSetting extends ProgramSetting {
 		
 	}
 
-	@Override
-	public DataCell unmarshal(File out_file, BufferedDataContainer c2,
-			String rid) throws IOException, InvalidSettingsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public void addFormattedColumns(List<DataColumnSpec> out_cols) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public static boolean canEmboss(String acd_type) {
 		if (acd_type.equals("datafile") || acd_type.equals("infile"))
 			return true;
 		return false;
+	}
+
+	@Override
+	public void addColumns(AbstractTableMapper om) {
+		// NO-OP
+	}
+
+	@Override
+	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException,
+			InvalidSettingsException {
+		// NO-OP
 	}
 }

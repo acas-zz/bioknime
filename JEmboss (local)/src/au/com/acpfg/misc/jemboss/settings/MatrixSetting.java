@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -13,12 +12,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.JEmbossProcessorNodeModel;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
@@ -62,12 +59,6 @@ public class MatrixSetting extends ProgramSetting {
 	}
 
 	@Override
-	public DataType getCellType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void getArguments(ProgramSettingsListener l) throws Exception {
 		// TODO Auto-generated method stub
 
@@ -81,16 +72,7 @@ public class MatrixSetting extends ProgramSetting {
 	}
 
 	@Override
-	public DataCell unmarshal(File out_file, BufferedDataContainer c2,
-			String rid) throws IOException, InvalidSettingsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addFormattedColumns(List<DataColumnSpec> out_cols) {
-		// TODO Auto-generated method stub
-
+	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException, InvalidSettingsException {
 	}
 
 	@Override
@@ -103,6 +85,11 @@ public class MatrixSetting extends ProgramSetting {
 		if (acd_type.equals("matrixf") || acd_type.equals("matrixfile"))
 			return true;
 		return false;
+	}
+
+	@Override
+	public void addColumns(AbstractTableMapper atm) {
+		// NO-OP
 	}
 
 }

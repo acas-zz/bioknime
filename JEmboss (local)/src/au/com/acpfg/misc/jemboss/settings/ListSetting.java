@@ -22,6 +22,7 @@ import org.knime.core.data.DataType;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
 /**
@@ -90,12 +91,6 @@ public class ListSetting extends ProgramSetting {
 		attrs.put("list-items", m_list_items);
 		attrs.put("current-selection", m_val);
 	}
-	
-	@Override
-	public DataType getCellType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	protected void setValue(String new_val) {
 		m_val = new_val;
@@ -126,23 +121,21 @@ public class ListSetting extends ProgramSetting {
 
 	}
 
-	@Override
-	public DataCell unmarshal(File out_file, BufferedDataContainer c2,
-			String rid) throws IOException, InvalidSettingsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addFormattedColumns(List<DataColumnSpec> out_cols) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public static boolean canEmboss(String acd_type) {
 		if (acd_type.equals("list") || acd_type.equals("selection"))
 			return true;
 		return false;
+	}
+
+	@Override
+	public void addColumns(AbstractTableMapper om) {
+		// NO-OP
+	}
+
+	@Override
+	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException,
+			InvalidSettingsException {
+		// NO-OP
 	}
 
 }

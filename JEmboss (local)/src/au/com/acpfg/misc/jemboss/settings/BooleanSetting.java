@@ -6,18 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.InvalidSettingsException;
 
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
 /**
@@ -72,12 +69,6 @@ public class BooleanSetting extends ProgramSetting {
 	}
 	
 	@Override
-	public DataType getCellType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void getArguments(ProgramSettingsListener l) {
 		String t = getType();
 		if (t.equals("bool") || t.equals("toggle")) {
@@ -98,21 +89,20 @@ public class BooleanSetting extends ProgramSetting {
 	}
 
 	@Override
-	public DataCell unmarshal(File out_file, BufferedDataContainer c2, String rid) 
+	public void unmarshal(File out_file, AbstractTableMapper om) 
 						throws IOException, InvalidSettingsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addFormattedColumns(List<DataColumnSpec> out_cols) {
-		// NO-OP for this setting type
 	}
 
 	public static boolean canEmboss(String acd_type) {
 		if (acd_type.equals("boolean") || acd_type.equals("toggle"))
 			return true;
 		return false;
+	}
+
+	@Override
+	public void addColumns(AbstractTableMapper om) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
