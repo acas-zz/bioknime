@@ -27,8 +27,8 @@ public class BooleanSetting extends ProgramSetting {
 	
 	protected BooleanSetting(HashMap<String,String> attrs) {
 		super(attrs);
-		if (attrs.containsKey("current-value")) {
-			m_val = new Boolean(attrs.get("current-value"));
+		if (attrs.containsKey("value")) {
+			m_val = new Boolean(attrs.get("value"));
 		} else {
 			m_val = new Boolean(true);
 		}
@@ -65,7 +65,7 @@ public class BooleanSetting extends ProgramSetting {
 	@Override
 	public void copy_attributes(HashMap<String,String> atts) {
 		super.copy_attributes(atts);
-		atts.put("current-value", m_val.toString());
+		atts.put("value", m_val.toString());
 	}
 	
 	@Override

@@ -8,6 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.ScrollPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
@@ -108,6 +111,26 @@ public class JEmbossProcessorNodeDialog extends DefaultNodeSettingsPane {
     	JPanel prog_panel = new JPanel();
     	prog_panel.setBorder(BorderFactory.createTitledBorder("Select the EMBOSS program"));
     	prog_panel.setLayout(new BorderLayout());
+    	JPanel search_panel = new JPanel();
+    	search_panel.setLayout(new FlowLayout());
+    	search_panel.add(new JLabel("Search:"));
+    	final JTextField tf = new JTextField(30);
+    	search_panel.add(tf);
+    	tf.addActionListener(new ActionListener() {
+    		private String m_prev = "";
+    		
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String cur = tf.getText();
+				// no change?
+				if (cur.equals(m_prev))
+					return;
+				// TODO... implement tree filter
+				m_prev = cur;
+			}
+    		
+    	});
+    	prog_panel.add(search_panel, BorderLayout.SOUTH);
     	
     	m_progs_tree.setRootVisible(false);
     	
@@ -116,18 +139,6 @@ public class JEmbossProcessorNodeDialog extends DefaultNodeSettingsPane {
     	c.setMaximumSize(new Dimension(640,400));
     	c.add(prog_panel, BorderLayout.CENTER);
     	
-    	JPanel misc_panel = new JPanel();
-    	misc_panel.setBorder(BorderFactory.createTitledBorder("Miscellaneous"));
-    	JPanel i1 = new JPanel();
-    	i1.setLayout(new BoxLayout(i1, BoxLayout.X_AXIS));
-    	i1.add(m_batch_size);
-    	i1.add(new JLabel("Batch size (0 means unlimited where permitted)"));
-    	misc_panel.add(i1);
-    	
-    	JPanel south_panel = new JPanel();
-    	south_panel.setLayout(new BoxLayout(south_panel, BoxLayout.Y_AXIS));
-    	south_panel.add(misc_panel);
-    	c.add(south_panel, BorderLayout.SOUTH);
     }
     
     /**
@@ -361,13 +372,28 @@ public class JEmbossProcessorNodeDialog extends DefaultNodeSettingsPane {
 		m_html_help.setEditable(false);
 		m_help_panel.setLayout(new BorderLayout());
 		m_help_panel.add(new JScrollPane(m_html_help), BorderLayout.CENTER);
+		
+		// ensure no duplicate tabs
 		this.removeTab("Options");
+		this.removeTab("Advanced");
+		
 		JPanel tmp = new JPanel();
 		tmp.setLayout(new BorderLayout());
 		tmp.add(m_prog_panel, BorderLayout.WEST);
 		tmp.add(m_help_panel, BorderLayout.CENTER);
 		this.addTab("EMBOSS Program", tmp);
 		this.addTab("Program Settings", m_options_panel);
+		
+	 	JPanel adv_panel = new JPanel();
+    	adv_panel.setBorder(BorderFactory.createTitledBorder("Batch Size"));
+    	JPanel i1 = new JPanel();
+    	i1.setLayout(new BoxLayout(i1, BoxLayout.X_AXIS));
+    	i1.add(m_batch_size);
+    	i1.add(new JLabel("Batch invocations where possible (0 means unlimited)"));
+    	adv_panel.add(i1);
+    	
+		this.addTab("Advanced", adv_panel);
+	
 		this.setSelected("EMBOSS Program");
 	}
 	

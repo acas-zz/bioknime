@@ -52,6 +52,8 @@ import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
  */
 public class SequenceSetting extends StringSetting {
 	private static final int FASTA_LINE_LENGTH = 80;		// how many chars per line in FASTA files
+	
+	// persisted state
 	private boolean m_from_column = true;
 	private final JCheckBox m_ignore = new JCheckBox("ignore?");
 	
@@ -95,7 +97,7 @@ public class SequenceSetting extends StringSetting {
 		ret.setLayout(new FlowLayout());
 		
 		if (t.equals("sequence")) {
-			ColumnSelectionPanel csp = make_col_panel(dt, getDefaultValue());
+			ColumnSelectionPanel csp = make_col_panel(dt);
 			m_from_column = true;
 			setValue(csp.getSelectedColumn());
 			csp.addActionListener(new ActionListener() {
@@ -130,7 +132,7 @@ public class SequenceSetting extends StringSetting {
 	 * @param dt - tablespec which provides the initial list of suitable columns
 	 * @return
 	 */
-	private ColumnSelectionPanel make_col_panel(DataTableSpec dt, String default_value) {
+	private ColumnSelectionPanel make_col_panel(DataTableSpec dt) {
         final ArrayList<String> ok_cols = new ArrayList<String>();
         
 		ColumnSelectionPanel csp = new ColumnSelectionPanel((Border)null, new ColumnFilter() {
@@ -152,6 +154,11 @@ public class SequenceSetting extends StringSetting {
 			
 		}, false, false);
 	
+		String default_value = getDefaultValue();
+		if (hasAttribute("value") && isInputFromColumn()) {
+			default_value = getValue();
+		}
+		
 		try {
 			if (dt != null) {
 				csp.update(dt, "");
@@ -189,7 +196,7 @@ public class SequenceSetting extends StringSetting {
 		final JRadioButton b2 = new JRadioButton(where+" column");
 		final JButton      open_file_button = new JButton("   Select File...   ");
 		
-		final ColumnSelectionPanel csp = make_col_panel(dt, getDefaultValue());		// csp is always constructed but not always added (eg. output settings)
+		final ColumnSelectionPanel csp = make_col_panel(dt);		// csp is always constructed but not always added (eg. output settings)
 		if (! m_from_column) {
 			File f = new File(getValue());
 			if (!f.exists() || !f.canRead()) {

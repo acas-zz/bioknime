@@ -8,6 +8,7 @@ import java.util.HashMap;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -25,15 +26,10 @@ import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
  * @author andrew.cassin
  *
  */
-public class MatrixSetting extends ProgramSetting {
-	private String m_val;
+public class MatrixSetting extends StringSetting {
 	
 	protected MatrixSetting(HashMap<String, String> attrs) {
 		super(attrs);
-		if (attrs.containsKey("current-matrix")) 
-			m_val = attrs.get("current-matrix");
-		else
-			m_val = getDefaultValue();
 	}
 
 	@Override
@@ -44,18 +40,19 @@ public class MatrixSetting extends ProgramSetting {
 
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
-				m_val = ((JList)arg0.getSource()).getSelectedValue().toString();
+				setValue(((JList)arg0.getSource()).getSelectedValue().toString());
 			}
 			
 		});
 		jl.setSelectedIndex(0);
+		ListModel lm = jl.getModel();
+		for (int i=0; i<lm.getSize(); i++) {
+			if (lm.getElementAt(i).equals(getValue())) {
+				jl.setSelectedIndex(i);
+				break;
+			}
+		}
 		return new JScrollPane(jl);
-	}
-
-	@Override
-	public void copy_attributes(HashMap<String,String> atts) {
-		super.copy_attributes(atts);
-		atts.put("current-matrix", m_val);
 	}
 
 	@Override

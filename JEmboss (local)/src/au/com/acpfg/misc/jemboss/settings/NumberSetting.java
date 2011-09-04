@@ -29,9 +29,8 @@ import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
  * @author andrew.cassin
  *
  */
-public class NumberSetting extends ProgramSetting {
+public class NumberSetting extends StringSetting {
 	private String  m_lowerbound, m_upperbound;
-	private String  m_val;
 
 	public NumberSetting(HashMap<String,String> attrs) {
 		super(attrs);
@@ -40,10 +39,6 @@ public class NumberSetting extends ProgramSetting {
 		if (attrs.containsKey("lowerbound") || attrs.containsKey("upperbound")) {
 			setMinMax(attrs.get("lowerbound"), attrs.get("upperbound"));
 		}
-		if (attrs.containsKey("value"))
-			m_val = attrs.get("value");
-		else
-			m_val = getDefaultValue();
 	}
 
 	// TODO: provide a way to remove bound?
@@ -79,20 +74,21 @@ public class NumberSetting extends ProgramSetting {
 		JPanel    p = new JPanel();
 		JSpinner sp = new JSpinner();
 		sp.setPreferredSize(new Dimension(100,25));
+		
 		sp.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				JSpinner sp = ((JSpinner) arg0.getSource());
-				Number    n = ((SpinnerNumberModel) sp.getModel()).getNumber();
-				m_val = n.toString();
+				SpinnerNumberModel mdl = ((SpinnerNumberModel) sp.getModel());
+				setValue(mdl.getValue().toString());
 			}
 			
 		});
 		String t = getType();
 		boolean is_real = t.equals("float") || t.equals("double");
 		sp.setModel(make_number_model(is_real, getDefaultValue(), m_lowerbound, m_upperbound));
-		m_val = sp.getValue().toString();
+		setValue(sp.getValue().toString());
 		p.add(sp);
 		p.add(Box.createVerticalGlue());
 		return p;
@@ -103,12 +99,11 @@ public class NumberSetting extends ProgramSetting {
 		super.copy_attributes(attrs);
 		attrs.put("lowerbound", m_lowerbound);
 		attrs.put("upperbound", m_upperbound);
-		attrs.put("value", m_val);
 	}
 
 	@Override
 	public void getArguments(ProgramSettingsListener l) {
-		l.addArgument(this, new String[] { "-"+getName(), m_val });
+		l.addArgument(this, new String[] { "-"+getName(), getValue() });
 	}
 
 	/**

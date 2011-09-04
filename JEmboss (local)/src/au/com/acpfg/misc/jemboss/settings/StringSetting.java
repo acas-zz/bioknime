@@ -31,7 +31,7 @@ public class StringSetting extends ProgramSetting {
 	
 	public StringSetting(HashMap<String,String> attrs) {
 		super(attrs);
-		if (attrs.containsKey("value"))
+		if (hasAttribute("value"))
 			m_val = attrs.get("value");
 		else 
 			m_val = getDefaultValue();
@@ -54,22 +54,22 @@ public class StringSetting extends ProgramSetting {
 	public JComponent make_widget(DataTableSpec dt) {
 		JTextField tf = new JTextField(getDefaultValue());
 		tf.setMinimumSize(new Dimension(100,20));
+		tf.setText(getValue());
 		tf.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				m_val = ((JTextField)arg0.getSource()).getText();
+				setValue(((JTextField)arg0.getSource()).getText());
 			}
 			
 		});
-		m_val = getDefaultValue();
 		return tf;
 	}
 
 	@Override
 	public void copy_attributes(HashMap<String,String> attrs) {
 		super.copy_attributes(attrs);
-		attrs.put("value", m_val);
+		attrs.put("value", getValue());
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class StringSetting extends ProgramSetting {
 
 	@Override
 	public void getArguments(ProgramSettingsListener l) throws Exception {
-		String val = m_val;
+		String val = getValue();
 		if (val.length() < 1) {			// pass empty argument correctly eg. 'exclude' argument for jaspscan
 			val = "\"\"";
 		}
