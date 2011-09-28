@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>Peak Extractor</name>
+    
+    <shortDescription>
+        Extracts data defining a peak from any cell supporting SpectralDataInterface (defined in the SpectraReader node)
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node extracts data from spectra previously loaded (eg. using the Spectra Reader node)
+        and stores it in the output table. The idea is to be able to identify spectra within large
+        scale experiments or to aid in publication of the data. This node will work with any type of
+        Spectra, however it does not take into account the units, the user will need to be careful here
+        if the sources of spectra have different units specified.</intro>
+        
+        
+        <option name="Spectra Column">Choose the column containing the spectra you wish to extract peak data from</option>
+        <option name="Peak list">Define the list of peaks to extract: you can give each peak a name, m/z of
+        the middle of the region of interest and a left tolerance and right tolerance. The extracted interval
+        is defined from [mz-left,mz+right) for each peak. Be sure to get the desired tolerance right, it is easy to forget!</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Spectra">Data containing the spectra from the Spectra Reader node</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Extracted Peak Data">The extracted data and summary statistics</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+   
+</knimeNode>

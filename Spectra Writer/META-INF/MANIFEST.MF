@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SpectraWriter-Node extension for KNIME Workbench
+Bundle-SymbolicName: au.com.acpfg.misc.spectra.writer; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: spectrawriter.jar
+Bundle-Activator: au.com.acpfg.misc.spectra.writer.SpectraWriterNodePlugin
+Bundle-Vendor: Andrew Cassin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Eclipse-LazyStart: true
+Export-Package: au.com.acpfg.misc.spectra.writer
+Import-Package: au.com.acpfg.misc.spectra
+

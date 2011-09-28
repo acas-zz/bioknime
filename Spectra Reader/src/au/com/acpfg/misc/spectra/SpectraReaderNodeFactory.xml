@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./spectra-icon-16x16.png" type="Source">
+    <name>Spectra Reader</name>
+    
+    <shortDescription>
+        Using the jrap-stax library, this node reads mzXML/mzML files into KNIME.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+        This node provides the ability to load spectra using the capability
+        provided by JRAP-Stax and ProteomeCommons IO frameworks: this provides
+        support for many formats, beginning with open-formats eg. mzXML, mzML and MGF.
+        
+       This node provides two output ports: one for spectra data and summary statistics
+       about each spectra eg. number of peaks the other for file-level information eg. 
+       instrument software, operator name etc.</intro>
+        
+        
+        <option name="Directory">The folder which contains the spectra files: <tt>.mzXML</tt>, <tt>.xml</tt>,
+        <tt>.mgf</tt> or <tt>.mgf.gz</tt> files.
+        
+        Depending on the format, these files may be validated so see the description of each format below
+        for more details. Other files (with different extensions) are skipped. If an
+        error occurs during parsing of a file, a warning will be issued and processing will continue
+        with remaining files.</option>
+        
+        <option name="Load Spectra?">If checked, this option causes an additional column to be
+        added to the output: with the spectra loaded into it. This can be a very large dataset, it
+        is recommended to allocate at least 512MB to knime for this. Be patient with many operations
+        as they may take minutes/hours to complete depending on the dataset</option>
+    </fullDescription>
+    
+    <ports>
+      
+        <outPort index="0" name="Spectra data">Spectral data from files. Missing cell values indicate
+        that the parser for the file could not identify the information (it may be unavailable or a bug
+        in reading in loading the file format)</outPort>
+        
+        <outPort index="1" name="Spectra file summary">Summary data from files</outPort>
+    </ports>    
+   
+</knimeNode>

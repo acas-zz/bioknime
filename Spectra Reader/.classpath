@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/jrap-stax.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry exported="true" kind="lib" path="lib/ProteomeCommons.org-IO.jar" sourcepath="C:/Users/andrew.cassin/workspace/ProteomeCommons.org Server Libraries"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

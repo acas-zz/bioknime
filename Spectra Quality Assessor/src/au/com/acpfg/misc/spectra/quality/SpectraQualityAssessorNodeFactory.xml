@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>Spectra Quality Scorer</name>
+    
+    <shortDescription>
+        Implements the 'Xrea' algorithm as described in the paper "Quality Assessment of 
+        Tandem Mass Spectra Based on Cumulative Intensity Normalization". This node also provides a second column for
+        adjustment of scores where several peaks dominate the spectra.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Implements the 'Xrea' algorithm as described in the paper <a href="http://pubs.acs.org/doi/abs/10.1021/pr0603248">Quality Assessment of 
+        Tandem Mass Spectra Based on Cumulative Intensity Normalization</a>. This node provides an additional two columns:
+        <ul>
+        	<li>an Xrea calculation which tries to be faithful to the method described in the paper</li>
+        	<li>an adjusted Xrea value computed when several peaks dominate the spectra. The approach adopted is to re-score the spectra
+        	after removing the dominant peaks. The user may set the thresholds for performing adjustment by configuring the node</li>
+        </ul>
+        This node may implement other algorithms at a future date.</intro>
+        
+        
+        <option name="Spectra Column">Column containing spectra to evaluate for quality score. 
+        This node can only process one spectra column at this time, though this may change in future.</option>
+        <option name="Dominant Peak Score Adjustment">If you have spectra which are being too highly scored because several peaks
+        dominate the spectrum, consider this option. Here you can specify calculation of an adjusted Xrea score which removes the dominant
+        peaks and scores the remainder. You can choose how much of the TIC (as a fraction) and the maximum number of peaks which must meet
+        the TIC fraction for adjustment to take place.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input spectra">Data with Spectra column</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Output Spectra &amp; Quality">Appended Spectra Quality scores</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+   
+</knimeNode>

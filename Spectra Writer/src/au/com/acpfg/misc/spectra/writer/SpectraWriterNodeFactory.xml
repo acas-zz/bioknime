@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Sink">
+    <name>Spectra Writer</name>
+    
+    <shortDescription>
+        Writes a spectra column out to disk for processing with other Mass Spec. software. Supports MGF format but does not guarantee that all input data will be preserved in the created file.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node takes data previously loaded by the Spectra Reader and saves it to disk 
+        in the specified format. It will "fake" data which required by the file format but is not
+        loaded into KNIME: 
+        
+        <p><b>WARNING:</b> this node does not guarantee to preserve all data present
+        in the loaded files as the software is incomplete and imperfect. Use this node at own risk.</p>
+        
+        </intro>
+        
+        
+        <option name="short name of first option (like in the dialog)">description of first option</option>
+        <option name="short name of second option (like in the dialog)">description of second option</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="In-Port name">Description of first input port...</inPort>
+        <!-- possibly more input ports here-->
+    </ports>    
+ 
+</knimeNode>
