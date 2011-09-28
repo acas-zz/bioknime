@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
@@ -88,21 +89,10 @@ public class BooleanSetting extends ProgramSetting {
 
 	}
 
-	@Override
-	public void unmarshal(File out_file, AbstractTableMapper om) 
-						throws IOException, InvalidSettingsException {
-	}
-
 	public static boolean canEmboss(String acd_type) {
 		if (acd_type.equals("boolean") || acd_type.equals("toggle"))
 			return true;
 		return false;
-	}
-
-	@Override
-	public void addColumns(AbstractTableMapper om) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

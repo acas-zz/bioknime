@@ -26,11 +26,6 @@ public class AlignmentSetting extends OutputFileSetting {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void unmarshal(File out_file, AbstractTableMapper om) {
-		
-	}
 	
 	public static boolean canEmboss(String acd_type) {
 		return (acd_type.equals("align"));

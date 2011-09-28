@@ -24,5 +24,9 @@ Export-Package: org.slf4j,
  org.slf4j.spi
 Import-Package: javax.activation,
  org.apache.axis,
- org.apache.commons.logging;version="1.0.4"
+ org.apache.commons.logging;version="1.0.4",
+ org.biojava.bio,
+ org.biojava.bio.program.gff,
+ org.biojava.bio.program.gff3,
+ org.biojava.utils
 

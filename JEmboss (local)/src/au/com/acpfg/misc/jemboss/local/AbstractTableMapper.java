@@ -13,6 +13,7 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 
+import au.com.acpfg.misc.jemboss.settings.DummySetting;
 import au.com.acpfg.misc.jemboss.settings.ProgramSetting;
 
 /**
@@ -28,20 +29,29 @@ public abstract class AbstractTableMapper {
 	private final List<DataColumnSpec> m_formatted_cols = new ArrayList<DataColumnSpec>();
 	
 	private final HashMap<DataColumnSpec,ProgramSetting> m_col2ps = new HashMap<DataColumnSpec,ProgramSetting>();
-	private final HashMap<ProgramSetting,DataColumnSpec> m_ps2col = new HashMap<ProgramSetting,DataColumnSpec>();
-	private final HashMap<ProgramSetting,Integer> m_ps2idx = new HashMap<ProgramSetting,Integer>();
+	private final HashMap<String,DataColumnSpec> m_ps2col = new HashMap<String,DataColumnSpec>();
+	private final HashMap<String,Integer> m_ps2idx = new HashMap<String,Integer>();
 	
 	// formatted data columns may provide many columns for just a single setting, so that results in List<...> everywhere
 	private final HashMap<DataColumnSpec,ProgramSetting> m_f_col2ps = new HashMap<DataColumnSpec,ProgramSetting>();
-	private final HashMap<ProgramSetting,List<DataColumnSpec>> m_f_ps2cols = new HashMap<ProgramSetting,List<DataColumnSpec>>();
-	private final HashMap<ProgramSetting,List<Integer>> m_f_ps2idx = new HashMap<ProgramSetting,List<Integer>>();
+	private final HashMap<String,List<DataColumnSpec>> m_f_ps2cols = new HashMap<String,List<DataColumnSpec>>();
+	private final HashMap<String,List<Integer>> m_f_ps2idx = new HashMap<String,List<Integer>>();
 	
 	private DataCell[] m_raw_cells;
 	private DataCell[] m_formatted_cells;
 	
 	public AbstractTableMapper() {
-		m_formatted_cols.add(new DataColumnSpecCreator("RowID", StringCell.TYPE).createSpec());
-		m_raw_cols.add(new DataColumnSpecCreator("RowIDs", StringCell.TYPE).createSpec());
+		// always present - useful to use for join
+		DataColumnSpec rowid_col = new DataColumnSpecCreator("RowID", StringCell.TYPE).createSpec();
+		HashMap<String,String> ds_attrs = new HashMap<String,String>();
+		ds_attrs.put("name", "RowID");
+		ds_attrs.put("type", "RowID");
+		DummySetting ds = new DummySetting(ds_attrs);
+		List<DataColumnSpec> cols = new ArrayList<DataColumnSpec>();
+		cols.add(rowid_col);
+		addFormattedColumns(ds, cols);
+		
+		m_raw_cols.add(new DataColumnSpecCreator("RowID", StringCell.TYPE).createSpec());
     	m_raw_cols.add(new DataColumnSpecCreator("Run status", IntCell.TYPE).createSpec());
     	m_raw_cols.add(new DataColumnSpecCreator("Runtime Output (if any)", StringCell.TYPE).createSpec());	// stdout
     	m_raw_cols.add(new DataColumnSpecCreator("Runtime Errors (includes description)", StringCell.TYPE).createSpec());	// stderr for each invocation ie. batch
@@ -52,8 +62,10 @@ public abstract class AbstractTableMapper {
 	public void addRawColumn(ProgramSetting ps, DataColumnSpec colspec) {
 		assert(colspec != null && ps != null);
 		m_col2ps.put(colspec, ps);
-		m_ps2col.put(ps,colspec);
-		m_ps2idx.put(ps, new Integer(m_raw_cols.size()));
+		// NB: these maps must use the name rather than the program setting as some settings
+		// create new instances (ie. class) of setting depending on their configuration
+		m_ps2col.put(ps.getName(),colspec);
+		m_ps2idx.put(ps.getName(), new Integer(m_raw_cols.size()));
 		m_raw_cols.add(colspec);
 	}
 	
@@ -63,17 +75,17 @@ public abstract class AbstractTableMapper {
 			m_f_col2ps.put(col, ps);
 			m_formatted_cols.add(col);
 		}
-		m_f_ps2cols.put(ps, columns);
+		m_f_ps2cols.put(ps.getName(), columns);
 		List<Integer> indices = new ArrayList<Integer>();
 		for (DataColumnSpec col : columns) {
 			indices.add(new Integer(m_formatted_cols.indexOf(col)));
 		}
-		m_f_ps2idx.put(ps, indices);
+		m_f_ps2idx.put(ps.getName(), indices);
 	}
 
 	public void setRawOutputCell(ProgramSetting ps, DataCell dc) {
 		assert(ps != null && dc != null);
-		int idx = m_ps2idx.get(ps).intValue();
+		int idx = m_ps2idx.get(ps.getName()).intValue();
 		m_raw_cells[idx] = dc;
 	}
  
@@ -137,4 +149,10 @@ public abstract class AbstractTableMapper {
 	}
 
 	public abstract void emitFormattedRow();
+
+	/**
+	 * Returns the string representation of the current rowID
+	 * @return
+	 */
+	public abstract String getCurrentRow();
 }

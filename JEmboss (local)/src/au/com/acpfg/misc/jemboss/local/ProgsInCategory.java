@@ -19,6 +19,22 @@ public class ProgsInCategory implements Iterable<EmbossProgramDescription>,Compa
 		m_category_name = category_name;
 	}
 	
+	/**
+	 * Constructor which only puts programs from <code>pic</code> that are acceptable to the specified filter
+	 * in the newly constructed instance
+	 * @param pic
+	 */
+	public ProgsInCategory(ProgsInCategory pic, MyTreeFilter filter) {
+		m_category_name = pic.m_category_name;
+		for (String name : pic.m_progs.keySet()) {
+			EmbossProgramDescription epd = pic.getProgram(name);
+			assert(epd != null);
+			if (filter.accepts(epd)) {
+				m_progs.put(name, epd);
+			}
+		}
+	}
+
 	public void add(String emboss_prog_name, String descr) {
 		m_progs.put(emboss_prog_name, new EmbossProgramDescription(emboss_prog_name, descr));
 	}
@@ -37,6 +53,21 @@ public class ProgsInCategory implements Iterable<EmbossProgramDescription>,Compa
 	
 	public EmbossProgramDescription getProgram(String k) {
 		return m_progs.get(k);
+	}
+	
+	/**
+	 * Returns <code>true</code> if any program in this category passes the 
+	 * specified filter, <code>false</code> otherwise.
+	 * 
+	 * @param tf
+	 * @return
+	 */
+	public boolean hasAcceptablePrograms(MyTreeFilter tf) {
+		for (EmbossProgramDescription epd : m_progs.values()) {
+			if (tf.accepts(epd)) 
+				return true;
+		}
+		return false;
 	}
 	
 	public int getIndexOfChild(Object k) {

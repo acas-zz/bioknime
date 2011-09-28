@@ -94,7 +94,7 @@ public class JEmbossProcessorNodeDialog extends DefaultNodeSettingsPane {
 		m_emboss_sel  = null;
 		m_acd         = null;
 		try {
-			m_progs_tree.setModel(new MyProgTreeModel());
+			m_progs_tree.setModel(new MyFilteredProgTreeModel());
 	    	m_tree_sel = new MyTreeSelectionListener(this);
 	    	m_progs_tree.getSelectionModel().addTreeSelectionListener(m_tree_sel);
 		} catch (IOException ioe) {
@@ -121,11 +121,29 @@ public class JEmbossProcessorNodeDialog extends DefaultNodeSettingsPane {
     		
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String cur = tf.getText();
+				final String cur = tf.getText();
 				// no change?
 				if (cur.equals(m_prev))
 					return;
-				// TODO... implement tree filter
+				MyFilteredProgTreeModel mdl = (MyFilteredProgTreeModel) m_progs_tree.getModel();
+				mdl.setFilter(new MyTreeFilter() {
+
+					@Override
+					public boolean accepts(Object node) {
+						if (node instanceof EmbossProgramDescription) {
+							EmbossProgramDescription epd = (EmbossProgramDescription) node;
+							return (matches(cur, epd.getName()+": "+epd.getDescription()));
+						} else if (node instanceof ProgsInCategory) {
+							return (((ProgsInCategory) node)).hasAcceptablePrograms(this);
+						}
+						// must be the root node... so...
+						return true;
+					}
+				
+					public boolean matches(String search_input, String text_to_match) {
+						return (text_to_match.toLowerCase().indexOf(search_input.toLowerCase()) >= 0);
+					}
+				});
 				m_prev = cur;
 			}
     		

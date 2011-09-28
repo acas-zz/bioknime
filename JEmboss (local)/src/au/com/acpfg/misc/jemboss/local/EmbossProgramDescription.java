@@ -1,5 +1,11 @@
 package au.com.acpfg.misc.jemboss.local;
 
+/**
+ * Embodies a single emboss program's description and name of the program
+ * 
+ * @author andrew.cassin
+ *
+ */
 public class EmbossProgramDescription {
 	private String m_name, m_descr;
 	

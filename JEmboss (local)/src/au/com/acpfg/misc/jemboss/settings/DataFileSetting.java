@@ -57,7 +57,7 @@ public class DataFileSetting extends ProgramSetting {
 		m_file = new_file;
 	}
 	
-	protected String getFileName() {
+	public String getFileName() {
 		if (m_file == null)
 			return "No file selected";
 		return m_file.getName();
@@ -126,16 +126,5 @@ public class DataFileSetting extends ProgramSetting {
 		if (acd_type.equals("datafile") || acd_type.equals("infile"))
 			return true;
 		return false;
-	}
-
-	@Override
-	public void addColumns(AbstractTableMapper om) {
-		// NO-OP
-	}
-
-	@Override
-	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException,
-			InvalidSettingsException {
-		// NO-OP
 	}
 }

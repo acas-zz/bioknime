@@ -191,15 +191,4 @@ public class NumberSetting extends StringSetting {
 		return false;
 	}
 
-	@Override
-	public void addColumns(AbstractTableMapper om) {
-		// NO-OP
-	}
-
-	@Override
-	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException,
-			InvalidSettingsException {
-		// NO-OP
-	}
-
 }

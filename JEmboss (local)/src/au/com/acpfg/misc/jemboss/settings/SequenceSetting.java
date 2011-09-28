@@ -293,21 +293,6 @@ public class SequenceSetting extends StringSetting {
 			}
 		}
 	}
-
-	@Override
-	public void addColumns(AbstractTableMapper atm) {
-		super.addColumns(atm);
-		if (isOutput()) {
-			// this class supports dumping out fasta sequences into a KNIME table (formatted output port)
-			// so here we add the columns as required by KNIME
-			List<DataColumnSpec> fasta_columns = new ArrayList<DataColumnSpec>();
-			fasta_columns.add(new DataColumnSpecCreator(getName()+":ID", StringCell.TYPE).createSpec());
-			fasta_columns.add(new DataColumnSpecCreator(getName()+":Description", StringCell.TYPE).createSpec());
-			fasta_columns.add(new DataColumnSpecCreator(getName()+":Sequence", StringCell.TYPE).createSpec());
-			
-			atm.addFormattedColumns(this, fasta_columns);
-		}
-	}
 	
 	@Override
 	public void copy_attributes(HashMap<String,String> attrs) {
@@ -334,106 +319,12 @@ public class SequenceSetting extends StringSetting {
 	    	File f = File.createTempFile("infile", ".fasta");
 	    	l.addInputFileArgument(this, "-"+getName(), f);
 	    } else if (t.equals("outseq") || t.equals("seqoutall") || t.equals("seqoutseq")) {
-	    	File f = File.createTempFile("outseq", ".fasta");
-	    	l.addOutputFileArgument(this, "-"+getName(), f);
+	    	// HACK BUG: "cast" this to OutputFileSetting since it is the most appropriate now
+	    	OutputFileSetting ops = new OutputFileSetting(this.getAttributes());
+	    	ops.getArguments(l);
 	    } else {
 	    	throw new InvalidSettingsException("Invalid argument type: "+t+" for "+getName());
 	    }
-	}
-
-	@Override
-	public void unmarshal(File out_file, AbstractTableMapper atm) throws IOException, InvalidSettingsException {
-		if (out_file == null)
-			return;
-		
-		StringBuffer seq_sb = new StringBuffer((int)out_file.length());
-		BufferedReader rdr = new BufferedReader(new FileReader(out_file));
-		String line;
-		while ((line = rdr.readLine()) != null) {
-			seq_sb.append(line);
-			seq_sb.append('\n');
-		}
-		rdr.close();
-		
-		String sequences_as_fasta = seq_sb.toString();
-		save_formatted(sequences_as_fasta, atm);
-		
-		atm.setRawOutputCell(this, new StringCell("<html><pre>"+sequences_as_fasta));
-		atm.emitRawRow();
-	}
-
-	private void save_formatted(String sequences_as_fasta, AbstractTableMapper atm) throws IOException {
-		 boolean done = false;
-		 boolean already_got_header = false;
-		 BufferedReader rseq = new BufferedReader(new StringReader(sequences_as_fasta));
-		 String line = null;
-         String accsn, descr;
-         StringBuffer seq;
-
-		 
-		 Pattern hdr_pattern = Pattern.compile("^(\\S+)\\s*(.*)$");
-		 while (!done) {
-	    	   
-	    	    // get header line
-	    	    if (!already_got_header) {
-		    	    do {
-		    	    	line = rseq.readLine();
-		    	    	if (line == null) {
-		    	    		done = true;
-		    	    		break;
-		    	    	}
-		    	    } while (!line.startsWith(">"));
-	    	    }
-	    	    
-	    	    if (!done) {
-	    	    	  String[] entries = line.split("\\x01");
-		              if (entries.length > 0 && entries[0].startsWith(">")) {
-		                	entries[0] = entries[0].substring(1);	// skip over >
-		              }
-		              Matcher m = hdr_pattern.matcher(entries[0]);
-		              if (!m.find()) {
-		            	  throw new IOException("Invalid result sequence: no accession specified!");
-		              }
-		              accsn = m.group(1);
-		              descr = m.group(2);
-		              String tline;
-		              seq = new StringBuffer(10 * 1024);
-		              boolean got_seq = false;
-		              already_got_header = false;
-		              int tline_len = 0;
-		              do {
-		            	  if ((line = rseq.readLine()) == null) {
-		            		  already_got_header = false;
-		            		  break;
-		            	  }
-		            	  tline         = line.trim();
-		            	  tline_len     = tline.length();
-		            	  if (tline_len > 0) {
-			            	  char first_c  = tline.charAt(0);
-			            	  if (first_c == '>') {
-			            		  got_seq = false;
-			            		  already_got_header = true;
-			            		  break;
-			            	  } 
-			            	  
-			            	  if (Character.isLetter(first_c) || first_c == '*' || first_c == '-') {
-			            		  seq.append(tline);
-			            		  got_seq = true;
-			            	  }
-		            	  }
-		              } while (tline_len == 0 || got_seq );
-		              
-		              // save the sequence to the container
-			    	  HashMap<String,DataCell> cellmap = new HashMap<String,DataCell>();
-			    	  cellmap.put(getName()+":ID", new StringCell(accsn));
-			    	  cellmap.put(getName()+":Description", new StringCell(descr));
-			    	  cellmap.put(getName()+":Sequence", new StringCell(seq.toString()));
-			    	  atm.setFormattedCells(cellmap);
-			    	  atm.emitFormattedRow();
-	    	    }
-	            
-	    	 
-	        }
 	}
 
 	public static boolean canEmboss(String acd_type) {

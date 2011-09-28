@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +14,7 @@ import org.knime.base.node.util.BufferedFileReader;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
@@ -19,6 +22,7 @@ import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.InvalidSettingsException;
 
+import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.settings.ProgramSetting;
 
 /**
@@ -27,28 +31,34 @@ import au.com.acpfg.misc.jemboss.settings.ProgramSetting;
  * @author andrew.cassin
  *
  */
-public class FastaUnmarshaller implements FormattedUnmarshallerInterface {
+public class FastaUnmarshaller implements UnmarshallerInterface {
 	private static final Pattern accsn_pattern  = Pattern.compile("^(\\S+)\\b");
 	private static final Pattern descr_pattern  = Pattern.compile("^\\S+\\s*(.*)$");
 	private static int id = 0;
 	
-	@Override
-	public DataColumnSpec[] add_columns() {
+	public void addColumns(AbstractTableMapper atm, ProgramSetting for_this ) {
 		ArrayList<DataColumnSpec> vec = new ArrayList<DataColumnSpec>();
-		vec.add(new DataColumnSpecCreator("FASTA Accession", StringCell.TYPE).createSpec());
-		vec.add(new DataColumnSpecCreator("FASTA Description", StringCell.TYPE).createSpec());
-		vec.add(new DataColumnSpecCreator("FASTA Sequence", StringCell.TYPE).createSpec());
-		return vec.toArray(new DataColumnSpec[0]);
+		String               basename = for_this.getName()+":";
+		vec.add(new DataColumnSpecCreator(basename+"Accession",   StringCell.TYPE).createSpec());
+		vec.add(new DataColumnSpecCreator(basename+"Description", StringCell.TYPE).createSpec());
+		vec.add(new DataColumnSpecCreator(basename+"Sequence",    StringCell.TYPE).createSpec());
+		atm.addFormattedColumns(for_this, vec);
+		atm.addRawColumn(for_this, new DataColumnSpecCreator(basename+"Raw output", StringCell.TYPE).createSpec());
 	}
 
 	@Override
-	public void process(ProgramSetting ps, File out_file,
-			BufferedDataContainer c, String rid) throws IOException,InvalidSettingsException {
-		int rid_idx   = c.getTableSpec().findColumnIndex("RowID");
-		int accsn_idx = c.getTableSpec().findColumnIndex("FASTA Accession");
-		int descr_idx = c.getTableSpec().findColumnIndex("FASTA Description");
-		int seq_idx   = c.getTableSpec().findColumnIndex("FASTA Sequence");
-		BufferedFileReader rseq = BufferedFileReader.createNewReader(new FileInputStream(out_file));
+	public void process(ProgramSetting for_this, 
+			InputStream emboss_prog_output_stream,
+			AbstractTableMapper atm) throws IOException,InvalidSettingsException {
+		String basename = for_this.getName()+":";
+		DataTableSpec spec_formatted = atm.getFormattedTableSpec();
+		String name_row  = "RowID";
+		String name_id   = basename+"Accession";
+		String name_descr= basename+"Description";
+		String name_seq  = basename+"Sequence";
+		String rid       = atm.getCurrentRow();
+		
+		BufferedFileReader rseq = BufferedFileReader.createNewReader(emboss_prog_output_stream);
 		String line = null;
 		boolean done = false;
         boolean already_got_header = false;
@@ -56,7 +66,7 @@ public class FastaUnmarshaller implements FormattedUnmarshallerInterface {
         String[] accsn = null;
         String[] descr = null;
         
-          
+        StringBuffer raw = new StringBuffer(10*1024);
        while (!done) {
     	   
     	    // get header line
@@ -71,6 +81,8 @@ public class FastaUnmarshaller implements FormattedUnmarshallerInterface {
     	    }
     	    
     	    if (!done) {
+    	    	  raw.append(line);
+    	    	  raw.append('\n');
     	    	  String[] entries = line.split("\\x01");
 	              if (entries.length > 0 && entries[0].startsWith(">")) {
 	                	entries[0] = entries[0].substring(1);	// skip over > for parse_accession()
@@ -99,6 +111,8 @@ public class FastaUnmarshaller implements FormattedUnmarshallerInterface {
 		            	  
 		            	  if (Character.isLetter(first_c) || first_c == '*' || first_c == '-') {
 		            		  seq.append(tline);
+		            		  raw.append(tline);
+		            		  raw.append('\n');
 		            		  got_seq = true;
 		            	  }
 	            	  }
@@ -106,23 +120,20 @@ public class FastaUnmarshaller implements FormattedUnmarshallerInterface {
     	    }
             
     	    // save the sequence to the container
-    	    int n_cells = c.getTableSpec().getNumColumns();
-    	    DataCell[] cells = new DataCell[n_cells];
-    	    for (int i=0; i<n_cells; i++) {
-    	    	cells[i] = DataType.getMissingCell();
-    	    }
-    	    
-    	    if (seq != null && accsn != null && descr != null) {
-    	    	cells[rid_idx]   = new StringCell(rid);
-	    	    cells[accsn_idx] = new StringCell(accsn[0]);
-	    	    cells[descr_idx] = new StringCell(descr[0]);
-	    	    cells[seq_idx]   = new StringCell(seq.toString());
-	    	    c.addRowToTable(new DefaultRow("ID"+id++, cells));
+    	    HashMap<String,DataCell> cellmap = new HashMap<String,DataCell>();
+    	    if (!done && seq != null && accsn != null && descr != null) {
+    	    	cellmap.put(name_row,   new StringCell(rid));
+	    	    cellmap.put(name_id,    new StringCell(accsn[0]));
+	    	    cellmap.put(name_descr, new StringCell(descr[0]));
+	    	    cellmap.put(name_seq,   new StringCell(seq.toString()));
+	    	    atm.setFormattedCells(cellmap);
+	    	    atm.emitFormattedRow();
     	    }
         }
 	      
 		rseq.close();
-		
+		atm.setRawOutputCell(for_this, new StringCell(raw.toString()));
+		// NB: emitting of a raw row is done once all unmarshalling is done (ie. all settings processed)
 	}
 	
 	 protected String[] parse_accession(Pattern matcher, String[] entries) throws InvalidSettingsException  {

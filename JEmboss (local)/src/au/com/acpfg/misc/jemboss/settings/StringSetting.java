@@ -17,6 +17,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 
+import au.com.acpfg.misc.jemboss.io.UnmarshallerInterface;
 import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
@@ -73,14 +74,6 @@ public class StringSetting extends ProgramSetting {
 	}
 
 	@Override
-	public void addColumns(AbstractTableMapper atm) {
-		assert(atm != null);
-		if (isOutput())
-			atm.addRawColumn(this, new DataColumnSpecCreator("EMBOSS: "+getName(), StringCell.TYPE).createSpec());
-	}
-
-
-	@Override
 	public void getArguments(ProgramSettingsListener l) throws Exception {
 		String val = getValue();
 		if (val.length() < 1) {			// pass empty argument correctly eg. 'exclude' argument for jaspscan
@@ -94,10 +87,6 @@ public class StringSetting extends ProgramSetting {
 			throws IOException, InvalidSettingsException {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void unmarshal(File out_file, AbstractTableMapper atm) throws IOException, InvalidSettingsException {
 	}
 
 	public static boolean canEmboss(String acd_type) {

@@ -2,6 +2,7 @@ package au.com.acpfg.misc.jemboss.local;
 
 import java.io.File;
 
+import au.com.acpfg.misc.jemboss.settings.OutputFileSetting;
 import au.com.acpfg.misc.jemboss.settings.ProgramSetting;
 
 /**
@@ -19,10 +20,10 @@ public interface ProgramSettingsListener {
 	
 	/**
 	 *  Invoked for an output file argument, the framework calls this method instead of <code>addArgument()</code>
+	 *  @param ops the setting which contains the details of the required output file, which is produced by an EMBOSS program
 	 *  @param opt the argument name (fully formed command line argument)
-	 *  @param file the output file (which is not yet created)
 	 */
-	public void addOutputFileArgument(final ProgramSetting ps, String opt, File out_file);
+	public void addOutputFileArgument(final OutputFileSetting ops, String opt);
 	
 	/**
 	 *  Invoked for an input file argument, the framework calls this method instead of <code>addArgument()</code>

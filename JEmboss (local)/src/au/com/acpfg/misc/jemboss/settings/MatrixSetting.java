@@ -69,10 +69,6 @@ public class MatrixSetting extends StringSetting {
 	}
 
 	@Override
-	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException, InvalidSettingsException {
-	}
-
-	@Override
 	public String getColumnName() {
 		// reading a matrix from a column is not (yet) supported
 		return null;
@@ -83,10 +79,4 @@ public class MatrixSetting extends StringSetting {
 			return true;
 		return false;
 	}
-
-	@Override
-	public void addColumns(AbstractTableMapper atm) {
-		// NO-OP
-	}
-
 }

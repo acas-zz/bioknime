@@ -28,4 +28,7 @@ public class RawAndFormattedTableMapper extends AbstractTableMapper {
 		m_raw.addRowToTable(new DefaultRow("Invocation"+m_r_cnt++, getRawCells()));
 	}
 		
+	public String getCurrentRow() {
+		return "Invocation"+m_r_cnt;
+	}
 }

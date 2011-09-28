@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: InterProScan-Node extension for KNIME Workbench
-Bundle-SymbolicName: au.com.acpfg.ebi.interproscan;singleton:=true
+Bundle-SymbolicName: au.com.acpfg.pfa.interproscan;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-ClassPath: interproscan.jar,
  lib/IPRScan_JAXWS.jar

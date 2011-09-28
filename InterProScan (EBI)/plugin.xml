@@ -16,7 +16,7 @@
       <node
             category-path="/ACPFG/Web Services"
             factory-class="au.com.acpfg.pfa.interproscan.InterProScanNodeFactory"
-            id="au.com.acpfg.ebi.InterProScanNodeFactory"/>
+            id="au.com.acpfg.pfa.InterProScanNodeFactory"/>
    </extension>
    
 </plugin>

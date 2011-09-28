@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -34,18 +35,19 @@ import org.knime.base.node.util.BufferedFileReader;
  */
 public class MyProgTreeModel implements TreeModel {
 	private final ArrayList<TreeModelListener>    m_listeners = new ArrayList<TreeModelListener>();
-	private final Map<String,ProgsInCategory>    m_categories = new TreeMap<String,ProgsInCategory>();
+	protected final Map<String,ProgsInCategory>   m_categories = new TreeMap<String,ProgsInCategory>();
 	
 	public MyProgTreeModel() throws IOException {
 		File    outfile = File.createTempFile("wossname", "progs");
 		String     prog = new String("wossname -search \"\" -outfile "+outfile.getAbsolutePath());
     	File   proj_dir = new File("c:\\temp");
     	Pattern       p = Pattern.compile("^(\\w+)\\s+(.*)$");
+ 
     	
     	RunEmbossApplication rea = new RunEmbossApplication(prog, null, proj_dir);
     	try {
     		int status = rea.getProcess().waitFor();
-    		Logger.getAnonymousLogger().info("wossname result status "+status+" output size(bytes): "+outfile.length());
+    		//Logger.getAnonymousLogger().info("wossname result status "+status+" output size(bytes): "+outfile.length());
     		BufferedReader br = new BufferedReader(new FileReader(outfile));
     		String line;
     		String category = null;
@@ -77,7 +79,7 @@ public class MyProgTreeModel implements TreeModel {
     		outfile.deleteOnExit();
     	}
 	}
-	
+
 	@Override
 	public void addTreeModelListener(TreeModelListener arg0) {
 		if (arg0 != null)
@@ -184,6 +186,13 @@ public class MyProgTreeModel implements TreeModel {
 	@Override
 	public void valueForPathChanged(TreePath arg0, Object arg1) {
 		// NO-OP this node model does nothing with this message
+	}
+	
+	protected void fireTreeStructureChanged() {
+		TreeModelEvent ev = new TreeModelEvent(this, new TreePath(getRoot()));
+		for (TreeModelListener tml : m_listeners) {
+			tml.treeStructureChanged(ev);
+		}
 	}
 
 }

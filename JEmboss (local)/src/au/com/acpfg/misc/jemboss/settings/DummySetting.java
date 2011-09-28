@@ -40,20 +40,12 @@ public class DummySetting extends ProgramSetting {
 	}
 
 	@Override
-	public void unmarshal(File out_file, AbstractTableMapper om) throws IOException, InvalidSettingsException {
-	}
-
-	@Override
 	public JComponent make_widget(DataTableSpec dt) {
 		return new JLabel(getName()+": "+getType());
 	}
 	
 	public static boolean canEmboss(String acd_type) {
 		return true;
-	}
-
-	@Override
-	public void addColumns(AbstractTableMapper om) {
 	}
 
 }

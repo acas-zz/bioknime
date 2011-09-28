@@ -1,7 +1,9 @@
 package au.com.acpfg.misc.jemboss.settings;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -14,8 +16,7 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 
-import au.com.acpfg.misc.jemboss.io.FastaUnmarshaller;
-import au.com.acpfg.misc.jemboss.io.FormattedUnmarshallerInterface;
+import au.com.acpfg.misc.jemboss.io.UnmarshallerInterface;
 import au.com.acpfg.misc.jemboss.local.AbstractTableMapper;
 import au.com.acpfg.misc.jemboss.local.ProgramSettingsListener;
 
@@ -29,16 +30,13 @@ import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingExcepti
  * @author andrew.cassin
  *
  */
-public abstract class ProgramSetting {
+public abstract class ProgramSetting implements UnmarshallerInterface {
 	
 	// DATA MEMBERS
 	private final HashMap<String,String> m_attrs;
 
-	// FORMATTED UNMARSHALLERS for various emboss programs
-	private final static Map<String, FormattedUnmarshallerInterface> m_um = new HashMap<String, FormattedUnmarshallerInterface>();
-	static {
-		m_um.put("seqoutall", new FastaUnmarshaller());
-	}
+	// Handlers for the data formats produced by various emboss programs
+	private final static Map<String, UnmarshallerInterface> m_um = new HashMap<String, UnmarshallerInterface>();
 	
 	
 	protected ProgramSetting(HashMap<String,String> attrs) {
@@ -47,10 +45,18 @@ public abstract class ProgramSetting {
 		m_attrs = attrs;
 	}
 
+	/**
+	 * Returns the EMBOSS ACD type for the setting eg. integer, string, etc.
+	 * @return may be <code>null</code> if something goes wrong with parsing an EMBOSS .acd file
+	 */
 	public String getType() {
 		return  m_attrs.get("type");
 	}
 	
+	/**
+	 * returns the name for the EMBOSS ACD setting
+	 * @return may be <code>null</code> if something goes wrong with parsing an EMBOSS .acd file
+	 */
 	public String getName() {
 		return m_attrs.get("name");
 	}
@@ -122,6 +128,10 @@ public abstract class ProgramSetting {
 		return Base64.encode(sb.toString().getBytes());
 	}
 	
+	protected final HashMap<String,String> getAttributes() {
+		return m_attrs;
+	}
+	
 	/**
 	 * Subclasses must override these this methods to ensure their class is correctly persisted
 	 */
@@ -151,15 +161,6 @@ public abstract class ProgramSetting {
 	}
 
 	/**
-	 * Returns the type of cell which supports the settings value (output settings only)
-	 * Most will be a <code>StringCell.TYPE</code> but we dont provide a default to force
-	 * subclasses to implement
-	 * 
-	 * @return
-	 */
-	public abstract void addColumns(AbstractTableMapper atm);
-
-	/**
 	 * Returns the value of the setting (after the option)
 	 * @return
 	 * @throws Exception 
@@ -178,46 +179,6 @@ public abstract class ProgramSetting {
 	public abstract void marshal(String id, DataCell c, PrintWriter fw) 
 					throws IOException, InvalidSettingsException; 
 	
-	/**
-	 * Responsible for reading <code>out_file</code> which contains the results of the EMBOSS program
-	 * for the specified ProgramSetting. 
-	 * 
-	 * @param out_file the file which contains the data to unmarshal (<code>this.m_type</code> provides clues as to expected content)
-	 * @param c2 the container which will contain formatted row output from the raw data (if supported)
-	 * @param rid the input row ID which produced the specified file via EMBOSS
-	 * @return This method must not return <code>null</code> (return a missing cell or throw instead)
-	 * @throws IOException
-	 */
-	public abstract void unmarshal(File out_file, AbstractTableMapper atm) 
-								throws IOException,InvalidSettingsException;
-	/* {
-		if (m_type.equals("outfile") || m_type.equals("seqout") || 
-				m_type.equals("seqoutall") || m_type.equals("featout") || m_type.equals("report")) {
-			StringBuffer    sb = new StringBuffer((int) out_file.length());
-			sb.append("<html><pre>");
-			BufferedReader bfr = null;
-			try {
-				bfr = new BufferedReader(new FileReader(out_file));
-				String tmp;
-				while ((tmp = bfr.readLine()) != null) {
-					sb.append(tmp);
-				}
-			} catch (IOException ioe) {
-				// close file to avoid file leak
-				if (bfr != null)
-					bfr.close();
-				throw ioe;
-			}
-			
-			// if cell has an entry in the formatted unmarshaller table, do that here now...
-			if (m_um.containsKey(m_type)) {
-				m_um.get(m_type).process(this, out_file, c2, rid);
-			}
-			return new StringCell(sb.toString());
-		}
-		throw new IOException("Cannot unmarshal "+m_name+": unknown format "+m_type);
-	}*/
-
 
 	/**
 	 * If <code>b</code> is true the setting will appear on the input settings tabbed pane. Only one of the input/output/optional 
@@ -267,18 +228,12 @@ public abstract class ProgramSetting {
 		return false;
 	}
 	
-	public boolean isFeatureOutput() {
-		return getType().equals("featout"); // && isOutput() ???
-	}
-	
 	/**
 	 * Factory method for instantiating the correct setting from the field=value pairs in the map...
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static ProgramSetting make(HashMap<String,String> attrs) throws InvalidSettingsException {
-		String dv= attrs.get("default-value");
-		String n = attrs.get("name");
 		String t = attrs.get("type").trim().toLowerCase();
-		ProgramSetting ps = null;
 		Class[] classes = new Class[] {
 				SequenceSetting.class, GraphSetting.class, BooleanSetting.class,
 				CodonUsageTableSetting.class, DataFileSetting.class, ListSetting.class,
@@ -330,5 +285,61 @@ public abstract class ProgramSetting {
 	
 	public void setMinMax(String min_bound, String max_bound) {
 		// NO-OP: only NumberSetting overrides this method
+	}
+	
+	public void unmarshal(File f, AbstractTableMapper atm, String emboss_prog) throws InvalidSettingsException,IOException {
+		String[] tries = new String[] {
+				emboss_prog + ":" + getName(),
+				emboss_prog + ":" + getType(),
+				getName(),
+				getType()
+		};
+		
+		// try to find the best unmarshaller (in the above order) for the specified setting
+		UnmarshallerInterface ui = null;
+		for (String t : tries) {
+			ui = m_um.get(t);
+			if (ui != null) {
+				FileInputStream fis = new FileInputStream(f);
+				ui.process(this, fis, atm);
+				fis.close();
+				return;
+			}
+		}
+	}
+	
+	
+	/****************** FORMATTEDUNMARSHALLERINTERFACE METHODS ***********************/
+	
+	/**
+	 * Returns the type of cell which supports the settings value (output settings only)
+	 * Most will be a <code>StringCell.TYPE</code> but we dont provide a default to force
+	 * subclasses to implement
+	 * 
+	 * @return
+	 */
+	public void addColumns(AbstractTableMapper atm, ProgramSetting ps) {
+		UnmarshallerInterface ui = m_um.get(ps.getName());
+		if (ui != null) {
+			ui.addColumns(atm, ps);
+		}
+	}
+	
+	/**
+	 * Used to add cells to both output ports for the node (raw and formatted). See 
+	 * <code>UnmarshallerInterface</code> for details
+	 */
+	public void process(ProgramSetting ps, InputStream out_file, AbstractTableMapper atm) 
+					throws IOException,InvalidSettingsException {	
+	}
+
+	public static void addUnmarshaller(String acd_type, UnmarshallerInterface um) {
+		m_um.put(acd_type, um);
+	}
+	
+	public static void addUnmarshaller(String[] acd_types, UnmarshallerInterface um) {
+		for (String acd_type : acd_types) {
+			addUnmarshaller(acd_type, um);
+		}
 	}
 }

@@ -42,6 +42,9 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
+import au.com.acpfg.misc.jemboss.io.FastaUnmarshaller;
+import au.com.acpfg.misc.jemboss.io.GFFUnmarshaller;
+import au.com.acpfg.misc.jemboss.settings.OutputFileSetting;
 import au.com.acpfg.misc.jemboss.settings.ProgramSetting;
 
 /**
@@ -79,6 +82,13 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     protected JEmbossProcessorNodeModel() {
         super(1, 2);
         JembossParams.setStandaloneMode(true);		// always a local server for this node
+        
+        // setup the unmarshallers for various EMBOSS data formats (not all are supported)
+        // if an emboss program produces a data type which is not available, the user
+        // will only be able to see the raw data
+		ProgramSetting.addUnmarshaller(new String[] {"outseq", "seqoutall", "seqoutset"}, 
+														new FastaUnmarshaller());
+		ProgramSetting.addUnmarshaller("marscan:report", new GFFUnmarshaller());
     }
 
     public static JembossParams getSettings() {
@@ -144,7 +154,7 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     	// compute the output columns based on user settings and expected binary data (eg. PNG images)
         final RawAndFormattedTableMapper om = new RawAndFormattedTableMapper(null, null);
     	for (ProgramSetting ps : mdl) {
-    		ps.addColumns(om);
+    		ps.addColumns(om, ps);
     	}
     
     	// traverse the input data, invoking local emboss install as required
@@ -194,10 +204,12 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
             
     		// load results of each batch run into output table
     		om.addRequiredCells(rid, status, stdout, stderr);
-    		for (ProgramSetting ps : mdl) {
+    		for (ProgramSetting ps : m_output_files.keySet()) {
     			File out_file = m_output_files.get(ps);
-    			ps.unmarshal(out_file, om);
+    			if (out_file != null)
+    				ps.unmarshal(out_file, om, mdl.getProgram());
     		}
+    		om.emitRawRow();
     		
     		exec.checkCanceled();
     		exec.setProgress(done++/n_rows, "Processed row "+rid);
@@ -211,13 +223,11 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
     	c2.close();
     	
     	// delete the temporary input & output files 
-    	if (false) {
-	    	for (File f  : m_input_files.values()) {
-	    		f.delete();
-	    	}
-	    	for (File f : m_output_files.values()) {
-	    		f.delete();
-	    	}
+    	for (File f  : m_input_files.values()) {
+    		f.delete();
+    	}
+    	for (File f : m_output_files.values()) {
+    		f.delete();
     	}
     	
         return new BufferedDataTable[]{container.getTable(), c2.getTable()};
@@ -466,15 +476,13 @@ public class JEmbossProcessorNodeModel extends NodeModel implements ProgramSetti
 	}
 
 	@Override
-	public void addOutputFileArgument(final ProgramSetting ps, String opt, File out_file) {
+	public void addOutputFileArgument(final OutputFileSetting ps, String opt) {
 		m_args.add(opt);
-		if (ps.isFeatureOutput())
-			m_args.add(out_file.getName());
-		else
-			m_args.add(out_file.getAbsolutePath());
+		OutputFileSetting ops = (OutputFileSetting) ps;
+		m_args.add(ops.getFileName());
 		
-		if (out_file.length() < 1) {			// SAFETY: dont delete anything with data which exists prior to execute()
-			m_output_files.put(ps, out_file);
+		if (ops.isSafeToDelete()) {			// SAFETY: dont delete anything with data which exists prior to execute()
+			m_output_files.put(ps, ops.getFile());
 			//logger.debug("got output file: "+ps);
 		}
 	}

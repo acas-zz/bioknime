@@ -73,6 +73,12 @@ public class InterProScanNodeModel extends NodeModel {
     private static final boolean DEFAULT_USE_CRC = true;
     private static final String DEFAULT_USE_APPL= "blastprodom";
 
+    /**
+     * The number of seconds to wait if a running job has not yet completed. 
+     * Scales linearly with the number of retries. Must be greater than zero
+     */
+	private static final int MANDATORY_DELAY = 20;
+
     
     // configure-dialog state which must be persistent
     private final SettingsModelString m_email = new SettingsModelString(CFGKEY_EMAIL, DEFAULT_EMAIL);
@@ -181,7 +187,7 @@ public class InterProScanNodeModel extends NodeModel {
 	    					tool = "<html><pre>"+new String(tool_bytes);
 	    				}
     				} catch (Exception e) {
-    					logger.warn("No tool output for (no data available from EBI), job:"+key);
+    					logger.warn("No tool output available from EBI, for job:"+key);
     				}
     				
     				// fetch an image of the results as well?
@@ -258,7 +264,7 @@ public class InterProScanNodeModel extends NodeModel {
     	for (String s : keySet) {
     		for (int idx=0; idx < 1000; idx++) {
     			if (wait) {
-    				int delay = (20+idx);		// seconds
+    				int delay = (MANDATORY_DELAY+(idx*MANDATORY_DELAY));		// seconds
     				logger.info("Pausing to meet EBI requirements: "+delay+" seconds.");
     				Thread.sleep(delay*1000);
     			}

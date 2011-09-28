@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Manipulator">
+   <name>BioJava Processor</name>
+    
+    <shortDescription>
+        Analyses the specified data using BioJava (see http://www.biojava.org) and produces the result at output. Depending
+        on the task chosen, other parameters must be chosen to correctly perform the operation: see below for more details.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This node performs numerous convenient tasks using biojava. It is designed to perform many
+        operations in a single task, which is commonly needed at the ACPFG.
+        
+        <p>
+        <b>NOTE:</b> The calculations will produce missing values in the results if unknown residues are involved eg. X's in the sequence.
+        Fix your sequences if you dont like this behaviour...
+        </p>
+        </intro>
+        
+        <option name="Task">Describes what operation to perform.
+	        <ol>
+	        <li>Compute hydrophobicity, pI and mass for sequences: performs an average amino acid hydrophobicity calculation, isoelectricpoint and calculates mass in Da (per biojava cookbook). Sequences with unknown residues are skipped</li>
+	        <li>Perform Six-Frame nucleotide translation: adds six columns to the input data, one for each frame translation. Excess nucleotides are trimmed to make the sequence a multiple of 3</li>
+	        <li>Convert DNA to RNA (Universal translation only): conver0ts DNA sequences to RNA using the universal translation table</li>
+	        <li>Convert RNA to Protein Sequence: converts RNA sequences in the specified sequence to Protein sequence</li>
+	        <li>Alternate translation of DNA to Protein (all built-in tables): adds 16 columns to the input data, and converts all DNA sequences to protein using every available translation table</li>
+	        <li>Computing the frequencies of residues at each position in the input sequence(s). This option will add the user-specified number of columns (up to a maximum) with frequencies of each residue letter in each column</li>
+	        </ol>
+        </option>
+        <option name="Sequence">Select the (string only) column which contains the sequences to be processed by the specified task</option>
+        <option name="Sequence Type">This node does <b>not</b> guess the sequence type, it insists you instruct it via this list. The
+        chosen task will perform automatic conversion as described above.</option>
+        <option name="Maximum Sequence Length">Only relevant to the position-by-residue task. If you are only interested in the first
+        few residues in each sequence, set this to the required number of starting residues to avoid un-necessary calculation (and improve speed).</option>
+        
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Sequence data">Data to use for the biojava task. Generally, each row is calculated independently although
+        this depends on the task.</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="BioJava calculation">The results of the chosen calculation, which are appended to the input data columns</outPort>
+        
+    </ports>    
+</knimeNode>
