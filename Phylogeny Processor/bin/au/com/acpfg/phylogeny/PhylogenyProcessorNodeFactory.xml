@@ -8,7 +8,8 @@
     </shortDescription>
     
     <fullDescription>
-        <intro>Insert long description here...</intro>
+        <intro>This node provides various methods to work with Phylogenetic data: trees, distance matrices etc. This node uses the
+        java <a href="http://www.cebl.auckland.ac.nz/pal-project/">Phylogenetic Analysis Library (PAL)</a> to do much of the work.</intro>
         
         
         <option name="short name of first option (like in the dialog)">description of first option</option>
@@ -21,8 +22,5 @@
         <outPort index="0" name="Out-Port name">Description of first output port...</outPort>
         <!-- possibly more output ports here-->
     </ports>    
-    <views>
-        <view index="0" name="name of first view">Description of first view...</view>
-        <!--view index="1" name="name of second view">Description of second view...</view-->
-    </views>
+   
 </knimeNode>

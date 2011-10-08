@@ -2,22 +2,18 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-   <!-- This is an example for providing an own category 
-      <extension
-         point="org.knime.workbench.repository.categories">
-      <category
-            description="Category containing my nodes"
-            icon="icons/default.png"
-            level-id="myNodes"
-            name="My nodes"
-            path="/"/>
+   <extension point="org.knime.workbench.repository.categories">
+   		<category description="Nodes written by http://www.acpfg.com.au"
+   		          icon="icons/default.png"
+   		          level-id=""
+   		          name=""
+   		          path="/ACPFG" />
    </extension>
-   -->
    
    <extension
          point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/"
+            category-path="/ACPFG"
             factory-class="au.com.acpfg.misc.biojava.BioJavaProcessorNodeFactory"
             id="au.com.acpfg.misc.biojava.BioJavaProcessorNodeFactory"/>
    </extension>

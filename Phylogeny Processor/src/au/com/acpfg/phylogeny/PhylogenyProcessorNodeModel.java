@@ -8,6 +8,7 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.RowIterator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -42,7 +43,7 @@ public class PhylogenyProcessorNodeModel extends NodeModel {
     public final static String CFG_TASK = "task-to-perform";
         
   
-    private final SettingsModelString m_task = new SettingsModelString(CFG_TASK, "DistTree: distance matrix methods");
+    private final SettingsModelString m_task = new SettingsModelString(CFG_TASK, "Calculate distance matrix");
 
     /**
      * Constructor for the node model.
@@ -58,30 +59,35 @@ public class PhylogenyProcessorNodeModel extends NodeModel {
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
 
-        // TODO do something here
-        logger.info("Node Model Stub... this is not yet implemented !");
-
-        
-        // the data table spec of the single output table, 
-        // the table will have three columns:
-        DataColumnSpec[] allColSpecs = new DataColumnSpec[3];
-        allColSpecs[0] = 
-            new DataColumnSpecCreator("Column 0", StringCell.TYPE).createSpec();
-        allColSpecs[1] = 
-            new DataColumnSpecCreator("Column 1", DoubleCell.TYPE).createSpec();
-        allColSpecs[2] = 
-            new DataColumnSpecCreator("Column 2", IntCell.TYPE).createSpec();
-        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-        // the execution context will provide us with storage capacity, in this
-        // case a data container to which we will add rows sequentially
-        // Note, this container can also handle arbitrary big data tables, it
-        // will buffer to disc if necessary.
-        BufferedDataContainer container = exec.createDataContainer(outputSpec);
+    	
+    	RunnableTask                 rt = make_task(m_task.getStringValue());
+        BufferedDataContainer container = exec.createDataContainer(rt.getOutputSpec(inData[0].getDataTableSpec()));
       
+        RowIterator it = inData[0].iterator();
+        int n_per_percent = inData[0].getRowCount() / 100;
+        int done = 0;
+        int pc = 0;
+        while (it.hasNext()) {
+        	DataRow r = it.next();
+        	rt.run(r, exec, container);
+        	done++;
+        	if (done >= n_per_percent) {
+        		exec.setProgress((double)pc++/100.0);
+        		exec.checkCanceled();
+        	}
+        }
+        
         // once we are done, we close the container and return its table
         container.close();
         BufferedDataTable out = container.getTable();
         return new BufferedDataTable[]{out};
+    }
+    
+    protected RunnableTask make_task(String task) throws InvalidSettingsException {
+    	if (task.toLowerCase().startsWith("calculate")) {
+    		return new CalcDistanceMatrixTask();
+    	}
+    	throw new InvalidSettingsException("Unsupported phylogenetic task: "+task);
     }
 
     /**

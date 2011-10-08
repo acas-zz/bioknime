@@ -30,8 +30,8 @@ public class MinProteinListNodeDialog extends DefaultNodeSettingsPane {
     	final SettingsModelString matches = new SettingsModelString(MinProteinListNodeModel.CFGKEY_PEPTIDES, "Peptides");
     	final SettingsModelString accsn   = new SettingsModelString(MinProteinListNodeModel.CFGKEY_PROTEIN, "Protein");
     	final String[] items = new String[] {
-    		"ILP: Minimum Set Cover (all proteins equal cost)",
-    		"ILP: Minimum Set Cover (Unique Peptide Weighting, experimental)"
+    		"Minimum Set Cover (all proteins equal cost)",
+    		"Minimum Set Cover (Unique Peptide Weighting, experimental)"
     	};
         addDialogComponent(new DialogComponentColumnNameSelection(accsn,   "Accession Column", 0, true, StringValue.class));
         addDialogComponent(new DialogComponentColumnNameSelection(matches, "Matching Peptides Column", 0, true, StringValue.class));
