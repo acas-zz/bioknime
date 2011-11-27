@@ -56,5 +56,7 @@ public class FastaReaderNodeDialog extends DefaultNodeSettingsPane {
         String actions[]= new String[] {"single", "collection"};
         addDialogComponent(new DialogComponentButtonGroup(FastaReaderNodeModel.make(FastaReaderNodeModel.CFGKEY_ENTRY_HANDLER), "Entry Handler", false, labels, actions));
       
+        addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(FastaReaderNodeModel.CFGKEY_MAKESTATS, 
+        		Boolean.FALSE), "Compute stats for sequences (slow & memory intensive)?"));
     }
 }

@@ -1,9 +1,16 @@
 package au.com.acpfg.misc.fasta;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.knime.base.node.util.BufferedFileReader;
@@ -17,15 +24,10 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.collection.CollectionCellFactory;
 import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -33,6 +35,8 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 
 /**
@@ -60,6 +64,7 @@ public class FastaReaderNodeModel extends NodeModel {
     static final String CFGKEY_ENTRY_HANDLER = "entry-handler";
     static final String CFGKEY_FASTADIR = "fasta-dir";
     static final String CFGKEY_ISDIR    = "read-entire-directory";
+    static final String CFGKEY_MAKESTATS= "make-statistics?";
     
     /** initial sequence file */
     private static final String DEFAULT_FASTA    = "/tmp/sequences.fasta";
@@ -68,6 +73,7 @@ public class FastaReaderNodeModel extends NodeModel {
     private static final String DEFAULT_ENTRY_HANDLER = "single";
     private static final String DEFAULT_FASTADIR = "c:/temp";
     private static final Boolean DEFAULT_ISDIR = Boolean.FALSE;
+    private static final Boolean DEFAULT_MAKESTATS = Boolean.FALSE;	// dont waste memory and performance by default
 
     // settings for this node: regular expressions to process the ">" lines, and the fasta sequence filename
     private final SettingsModelString m_fasta    = make(CFGKEY_FASTA);
@@ -76,13 +82,14 @@ public class FastaReaderNodeModel extends NodeModel {
     private final SettingsModelString m_entry_handler = make(CFGKEY_ENTRY_HANDLER);
     private final SettingsModelString m_fastadir = make(CFGKEY_FASTADIR);
     private final SettingsModelBoolean m_isdir   = new SettingsModelBoolean(CFGKEY_ISDIR, DEFAULT_ISDIR);
+    private final SettingsModelBoolean m_stats   = new SettingsModelBoolean(CFGKEY_MAKESTATS, DEFAULT_MAKESTATS);
     
 
     /**
      * Constructor for the node model.
      */
     protected FastaReaderNodeModel() {
-        super(0, 1); // output port only
+        super(0, 2); // output ports only
     }
 
     public static SettingsModelString make(String k) {
@@ -129,6 +136,7 @@ public class FastaReaderNodeModel extends NodeModel {
     	boolean as_single        = m_entry_handler.getStringValue().equals("single");
          
     	DataTableSpec outputSpec = make_output_spec(as_single);
+    	DataTableSpec statSpec   = SequenceStatistics.getOutputSpec();
     	
     	ArrayList<String> filenames = new ArrayList<String>();
     	if (!m_isdir.getBooleanValue()) {
@@ -144,6 +152,10 @@ public class FastaReaderNodeModel extends NodeModel {
 						fname.endsWith(".txt") ||
 						fname.endsWith(".seq") ||
 						fname.endsWith(".fa.gz") ||
+						fname.endsWith(".fsa.gz") ||
+						fname.endsWith(".fsa") ||
+						fname.endsWith(".fna") || 
+						fname.endsWith(".fna.gz") ||
 						fname.endsWith(".fasta.gz") ||
 						fname.endsWith(".txt.gz") ||
 						fname.endsWith(".seq.gz") ||
@@ -169,6 +181,8 @@ public class FastaReaderNodeModel extends NodeModel {
     	}
       
         BufferedDataContainer container = exec.createDataContainer(outputSpec);
+        BufferedDataContainer statsContainer = exec.createDataContainer(statSpec);
+        
         long n_seq   = 0;
         long n_seq_rej = 0;
         Pattern accsn_matcher = Pattern.compile(m_accsn_re.getStringValue());
@@ -185,6 +199,7 @@ public class FastaReaderNodeModel extends NodeModel {
            logger.info("Processing FASTA file: "+fname);
            
            File input_sequences     = new File(fname);
+           SequenceStatistics stats = m_stats.getBooleanValue() ? new SequenceStatistics(input_sequences) : null;
            boolean is_compressed    = false;
            if (fname.toLowerCase().endsWith(".gz") || 
         		   fname.toLowerCase().endsWith(".z")) {
@@ -197,12 +212,16 @@ public class FastaReaderNodeModel extends NodeModel {
             	files_done++;
             	continue;
            }
-           BufferedFileReader rseq;
+           BufferedReader rseq;
+           InputStream is = null;
+           
            if (is_compressed) {
-        	   rseq = BufferedFileReader.createNewReader(new GZIPInputStream(new FileInputStream(input_sequences), 128*1024));
+        	   is = new GZIPInputStream(new FileInputStream(input_sequences), 16*1024);
            } else {
-        	   rseq = BufferedFileReader.createNewReader(new FileInputStream(input_sequences));
+        	   is = new FileInputStream(input_sequences);
            }
+    	   rseq = new BufferedReader(new InputStreamReader(is));
+
            fname = input_sequences.getName();
            boolean done = false;
            boolean already_got_header = false;
@@ -256,11 +275,16 @@ public class FastaReaderNodeModel extends NodeModel {
 	    	    }
 	            
 	    	    // save the sequence to the container
-	    	    if (save_sequence(container, n_seq, accsn, descr, seq, fname, as_single)) {
-	                	n_seq++;
-	                	accsn = null; // help java garbage collector
-	                	descr = null;
-	            }
+	    	    
+	    	    if (!done) {
+		    	    DataCell c1 = as_single ? new StringCell(accsn[0]) : CollectionCellFactory.createListCell(toDataCells(accsn));
+		    	    DataCell c2 = as_single ? new StringCell(descr[0]) : CollectionCellFactory.createListCell(toDataCells(descr));
+		    	    if (save_sequence(container, n_seq, c1, c2, seq, fname, stats)) {
+		                	n_seq++;
+		                	accsn = null; // help java garbage collector
+		                	descr = null;
+		            }
+	    	    }
 	          
 	            if (n_seq % 1000 == 0) {
 	            	try {
@@ -271,42 +295,51 @@ public class FastaReaderNodeModel extends NodeModel {
 	            		throw ce;
 	            	}
 	                // and update node progress "traffic light"
-	                double tmp = (((double)files_done)/filenames.size())*portion+((((double)rseq.getNumberOfBytesRead())/p_size)*portion);
+	                double tmp = (((double)files_done)/filenames.size())*portion+((((double)0)/p_size)*portion);
 	                exec.setProgress(tmp, "Adding " + n_seq+" from "+fname);
 	            }
 	        }
 	      
 	        rseq.close();
+	        if (stats != null) {
+	        	stats.addStats(statsContainer);
+	        }
 	        files_done++;
         }
         
         // once we are done, we close the container and return its table
         container.close();
+        statsContainer.close();
+        
         BufferedDataTable out = container.getTable();
+        BufferedDataTable statsTable = statsContainer.getTable();
+        
         logger.info("Matched "+n_seq+ " sequences, failed to match "+n_seq_rej+" sequences.");
-        return new BufferedDataTable[]{out};
+        return new BufferedDataTable[]{out, statsTable};
     }
     
-    protected boolean save_sequence(BufferedDataContainer container, long n_seq, String[] accsn, String[] descr, StringBuffer seq, String fname, boolean as_single)
+    protected boolean save_sequence(BufferedDataContainer container, long n_seq, DataCell c1, DataCell c2,
+    		StringBuffer seq, String fname, SequenceStatistics stats)
     {
-    	if (accsn != null && descr != null && seq != null) {
+    	if (c1 != null && c2 != null && seq != null) {
   		    RowKey key = new RowKey("Seq" + n_seq);
             // the cells of the current row, the types of the cells must match
             // the column spec (see above)
             DataCell[] cells = new DataCell[4];
-            if (as_single) {
-            	cells[0]         = new StringCell(accsn[0]); 
-            	cells[1]         = new StringCell(descr[0]); 
-            } else {
-            	cells[0]         = CollectionCellFactory.createListCell(toDataCells(accsn));
-            	cells[1]         = CollectionCellFactory.createListCell(toDataCells(descr));
-            }
-            cells[2]         = new StringCell(seq.toString());
+        	cells[0]         = c1;
+        	cells[1]         = c2;
+        
+            String str       = seq.toString();
+            cells[2]         = new StringCell(str);
             cells[3]         = new StringCell(fname);
             DataRow      row = new DefaultRow(key, cells);
             container.addRowToTable(row);
+            if (stats != null) {
+            	stats.grokSequence(str);
+            }
             return true;
   	    } else {
+  	    	// NB: do not update stats object if bogus parameters...
   	    	return false;
   	    }
     }
@@ -375,7 +408,8 @@ public class FastaReaderNodeModel extends NodeModel {
             throws InvalidSettingsException {
     	boolean as_single = m_entry_handler.getStringValue().equals("single");
         DataTableSpec out = make_output_spec(as_single);
-        return new DataTableSpec[] {out};
+        DataTableSpec out2= SequenceStatistics.getOutputSpec();
+        return new DataTableSpec[] {out, out2};
     }
 
     /**
@@ -389,6 +423,7 @@ public class FastaReaderNodeModel extends NodeModel {
         m_entry_handler.saveSettingsTo(settings);
         m_fastadir.saveSettingsTo(settings);
         m_isdir.saveSettingsTo(settings);
+        m_stats.saveSettingsTo(settings);
     }
 
     /**
@@ -403,6 +438,11 @@ public class FastaReaderNodeModel extends NodeModel {
         m_entry_handler.loadSettingsFrom(settings);
         m_fastadir.loadSettingsFrom(settings);
         m_isdir.loadSettingsFrom(settings);
+        if (settings.containsKey(CFGKEY_MAKESTATS)) {
+        	m_stats.loadSettingsFrom(settings);
+        } else {
+        	m_stats.setBooleanValue(Boolean.FALSE);
+        }
     }
 
     /**
@@ -417,6 +457,9 @@ public class FastaReaderNodeModel extends NodeModel {
         m_entry_handler.validateSettings(settings);
         m_fastadir.validateSettings(settings);
         m_isdir.validateSettings(settings);
+        if (settings.containsKey(CFGKEY_MAKESTATS)) {
+        	m_stats.validateSettings(settings);
+        }
     }
    
     protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException {

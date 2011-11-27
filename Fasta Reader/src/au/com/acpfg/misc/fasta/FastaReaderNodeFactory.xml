@@ -48,6 +48,7 @@
     <ports>
         
         <outPort index="0" name="FASTA sequences">Each row contains a single sequence with accession and description data filled in as described above.</outPort>
+        <outPort index="1" name="Sequence Statistics">Outputs key statistics for each file loaded</outPort>
         <!-- possibly more output ports here-->
     </ports>    
     
